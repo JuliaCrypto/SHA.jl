@@ -4,7 +4,7 @@ using Compat
 # Define some data we will run our tests on
 lorem = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 so_many_as = repmat([0x61], 1000000)
-lorem_file = pwd() * "/lorem.sha"  # Subject to change
+lorem_file = ".lorem.sha"  # Subject to change
 lorem_IO = open(lorem_file, "w")
 write(lorem_IO, lorem)
 close(lorem_IO)
@@ -13,11 +13,11 @@ data = Any["", "test", lorem, lorem_file, so_many_as]
 # Descriptions of the data, the SHA functions we'll run on the data, etc...
 data_desc = ["the empty string", "the string \"test\"", "lorem ipsum", "lorem ipsum file", "one million a's"]
 sha_types = Dict(sha1 => SHA.SHA1_CTX,
-            sha2_224 => SHA.SHA2_224_CTX, sha2_256 => SHA.SHA2_256_CTX, sha2_384 => SHA.SHA2_384_CTX, sha2_512 => SHA.SHA2_512_CTX,
-            sha3_224 => SHA.SHA3_224_CTX, sha3_256 => SHA.SHA3_256_CTX, sha3_384 => SHA.SHA3_384_CTX, sha3_512 => SHA.SHA3_512_CTX)
+                 sha2_224 => SHA.SHA2_224_CTX, sha2_256 => SHA.SHA2_256_CTX, sha2_384 => SHA.SHA2_384_CTX, sha2_512 => SHA.SHA2_512_CTX,
+                 sha3_224 => SHA.SHA3_224_CTX, sha3_256 => SHA.SHA3_256_CTX, sha3_384 => SHA.SHA3_384_CTX, sha3_512 => SHA.SHA3_512_CTX)
 sha_funcs = [sha1,
-            sha2_224, sha2_256, sha2_384, sha2_512,
-            sha3_224, sha3_256, sha3_384, sha3_512]
+             sha2_224, sha2_256, sha2_384, sha2_512,
+             sha3_224, sha3_256, sha3_384, sha3_512]
 ctxs = [SHA1_CTX,
         SHA2_224_CTX, SHA2_256_CTX, SHA2_384_CTX, SHA2_512_CTX,
         SHA3_224_CTX, SHA3_256_CTX, SHA3_384_CTX, SHA3_512_CTX]
@@ -208,7 +208,7 @@ end
 println("Done! [$(nerrors - nerrors_old) errors]")
 
 
-replstr(x) = sprint((io,x) -> show(IOContext(io, limit=true), MIME("text/plain"), x), x)
+replstr(x) = sprint((io,x) -> show(io, MIME("text/plain"), x), x)
 for idx in 1:length(ctxs)
     # Part #1: copy
     print("Testing copy function @ $(ctxs[idx]) ...")
