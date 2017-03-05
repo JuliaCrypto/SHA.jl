@@ -2,7 +2,7 @@
 
 # update! takes in variable-length data, buffering it into blocklen()-sized pieces,
 # calling transform!() when necessary to update the internal hash state.
-function update!{T<:Union{SHA1_CTX,SHA2_CTX,SHA3_CTX}}(context::T, data::Array{UInt8,1})
+function update!{T<:Union{SHA1_CTX,SHA2_CTX,SHA3_CTX}, N}(context::T, data::Union{Array{UInt8, N}, NTuple{N, UInt8}})
     # We need to do all our arithmetic in the proper bitwidth
     UIntXXX = typeof(context.bytecount)
 
