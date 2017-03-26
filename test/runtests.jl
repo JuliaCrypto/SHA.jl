@@ -235,6 +235,16 @@ for idx in 1:length(ctxs)
     println("Done! [$(nerrors - nerrors_old) errors]")
 end
 
+# test error if eltype of input is not UInt8
+for f in sha_funcs
+    try
+        f(UInt32[0x23467, 0x324775])
+        warn("Non-UInt8 Arrays should fail")
+        nerrors += 1
+    end
+end
+
+
 # Clean up the I/O mess
 rm(file)
 
