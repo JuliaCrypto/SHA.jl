@@ -38,7 +38,8 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
                  (:sha3_512, :SHA3_512_CTX),]
     @eval begin
         # Our basic function is to process arrays of bytes
-        function $f{N}(data::Union{Array{UInt8, N}, NTuple{N, UInt8}})
+        function $f(data)
+            @assert eltype(data) == UInt8
             ctx = $ctx()
             update!(ctx, data)
             return digest!(ctx)
