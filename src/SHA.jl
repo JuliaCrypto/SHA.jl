@@ -1,6 +1,7 @@
 __precompile__()
 
 module SHA
+using Compat
 
 # Export convenience functions, context types, update!() and digest!() functions
 export sha1, SHA1_CTX, update!, digest!
