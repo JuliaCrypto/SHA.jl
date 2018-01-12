@@ -218,7 +218,7 @@ for (key, msg, fun, hash) in (
     (b"key", b"The quick brown fox jumps over the lazy dog", hmac_sha1, "de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9"),
     (b"key", b"The quick brown fox jumps over the lazy dog", hmac_sha256, "f7bc83f430538424b13298e6aa6fb143ef4d59a14946175997479dbc2d1a3cd8"),
 )
-    digest = bytes2hex(fun(key, msg))
+    digest = bytes2hex(fun(Vector(key), Vector(msg)))
     if digest != hash
         print("\n")
         warn(
