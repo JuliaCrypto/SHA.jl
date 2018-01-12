@@ -55,7 +55,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         end
 
         # AbstractStrings are a pretty handy thing to be able to crunch through
-        $f(str::AbstractString) = $f(Vector{UInt8}(str))
+        $f(str::AbstractString) = $f(Vector{UInt8}(codeunits(str)))
         $g(key::Vector{UInt8}, str::AbstractString) = $g(key, Vector{UInt8}(str))
 
         # Convenience function for IO devices, allows for things like:
@@ -64,7 +64,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         # done
         function $f(io::IO, chunk_size=4*1024)
             ctx = $ctx()
-            buff = Vector{UInt8}(chunk_size)
+            buff = Vector{UInt8}(uninitialized, chunk_size)
             while !eof(io)
                 num_read = readbytes!(io, buff)
                 update!(ctx, buff[1:num_read])

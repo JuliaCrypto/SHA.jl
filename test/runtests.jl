@@ -101,7 +101,7 @@ sha3_512 => [
 ]
 )
 
-function describe_hash{S<:SHA.SHA_CTX}(T::Type{S})
+function describe_hash(T::Type{S}) where {S <: SHA.SHA_CTX}
     if T <: SHA.SHA1_CTX return "SHA1" end
     if T <: SHA.SHA2_CTX return "SHA2-$(SHA.digestlen(T)*8)" end
     if T <: SHA.SHA3_CTX return "SHA3-$(SHA.digestlen(T)*8)" end
