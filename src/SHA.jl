@@ -26,6 +26,11 @@ include("sha3.jl")
 include("common.jl")
 include("hmac.jl")
 
+# Compat.jl-like shim for codeunits() on Julia <= 0.6:
+if VERSION < v"0.7.0-DEV.3213"
+    codeunits(x) = x
+end
+
 # Create data types and convenience functions for each hash implemented
 for (f, ctx) in [(:sha1, :SHA1_CTX),
                  (:sha224, :SHA224_CTX),
