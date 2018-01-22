@@ -2,7 +2,7 @@
 
 # update! takes in variable-length data, buffering it into blocklen()-sized pieces,
 # calling transform!() when necessary to update the internal hash state.
-function update!(context::T, data::U) where {T<:Union{SHA1_CTX,SHA2_CTX,SHA3_CTX},
+function update!(context::T, data::U) where {T<:SHA_CTX,
                                              U<:Union{Array{UInt8,1},NTuple{N,UInt8} where N}}
     # We need to do all our arithmetic in the proper bitwidth
     UIntXXX = typeof(context.bytecount)
@@ -28,9 +28,8 @@ function update!(context::T, data::U) where {T<:Union{SHA1_CTX,SHA2_CTX,SHA3_CTX
     end
 end
 
-
-# Clear out any saved data in the buffer, append total bitlength, and return our precious hash!
-function digest!(context::T) where {T<:Union{SHA1_CTX,SHA2_CTX}}
+# Pad the remainder leaving space for the bitcount
+function pad_remainder!(context::T) where T<:SHA_CTX
     usedspace = context.bytecount % blocklen(T)
     # If we have anything in the buffer still, pad and transform that data
     if usedspace > 0
@@ -60,7 +59,13 @@ function digest!(context::T) where {T<:Union{SHA1_CTX,SHA2_CTX}}
             context.buffer[i] = 0x0
         end
     end
+end
 
+
+# Clear out any saved data in the buffer, append total bitlength, and return our precious hash!
+# Note: SHA3_CTX has a more specialised method
+function digest!(context::T) where T<:SHA_CTX
+    pad_remainder!(context)
     # Store the length of the input data (in bits) at the end of the padding
     bitcount_idx = div(short_blocklen(T), sizeof(context.bytecount)) + 1
     pbuf = Ptr{typeof(context.bytecount)}(pointer(context.buffer))
