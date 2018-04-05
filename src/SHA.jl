@@ -16,6 +16,8 @@ export hmac_sha224, hmac_sha256, hmac_sha384, hmac_sha512
 export hmac_sha2_224, hmac_sha2_256, hmac_sha2_384, hmac_sha2_512
 export hmac_sha3_224, hmac_sha3_256, hmac_sha3_384, hmac_sha3_512
 
+# data to be hashed:
+const AbstractBytes = Union{AbstractVector{UInt8},NTuple{N,UInt8} where N}
 
 include("constants.jl")
 include("types.jl")
@@ -25,11 +27,6 @@ include("sha2.jl")
 include("sha3.jl")
 include("common.jl")
 include("hmac.jl")
-
-# Compat.jl-like shim for codeunits() on Julia <= 0.6:
-if VERSION < v"0.7.0-DEV.3213"
-    codeunits(x) = x
-end
 
 # Create data types and convenience functions for each hash implemented
 for (f, ctx) in [(:sha1, :SHA1_CTX),
@@ -49,20 +46,22 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
 
     @eval begin
         # Our basic function is to process arrays of bytes
-        function $f(data::T) where T<:Union{Array{UInt8,1},NTuple{N,UInt8} where N}
+        function $f(data::AbstractBytes)
             ctx = $ctx()
             update!(ctx, data)
             return digest!(ctx)
         end
-        function $g(key::Vector{UInt8}, data::T) where T<:Union{Array{UInt8,1},NTuple{N,UInt8} where N}
+        function $g(key::Vector{UInt8}, data::AbstractBytes)
             ctx = HMAC_CTX($ctx(), key)
             update!(ctx, data)
             return digest!(ctx)
         end
 
         # AbstractStrings are a pretty handy thing to be able to crunch through
-        $f(str::AbstractString) = $f(Vector{UInt8}(codeunits(str)))
-        $g(key::Vector{UInt8}, str::AbstractString) = $g(key, Vector{UInt8}(str))
+        $f(str::AbstractString) = $f(String(str)) # always crunch UTF-8 repr
+        $f(str::String) = $f(codeunits(str))
+        $g(key::Vector{UInt8}, str::AbstractString) = $g(key, String(str))
+        $g(key::Vector{UInt8}, str::String) = $g(key, codeunits(str))
 
         # Convenience function for IO devices, allows for things like:
         # open("test.txt") do f
@@ -73,7 +72,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
             buff = Vector{UInt8}(uninitialized, chunk_size)
             while !eof(io)
                 num_read = readbytes!(io, buff)
-                update!(ctx, buff[1:num_read])
+                update!(ctx, buff, num_read)
             end
             return digest!(ctx)
         end
@@ -82,7 +81,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
             buff = Vector{UInt8}(chunk_size)
             while !eof(io)
                 num_read = readbytes!(io, buff)
-                update!(ctx, buff[1:num_read])
+                update!(ctx, buff, num_read)
             end
             return digest!(ctx)
         end
