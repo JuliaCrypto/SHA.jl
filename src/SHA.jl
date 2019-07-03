@@ -1,8 +1,4 @@
-__precompile__()
-
 module SHA
-using Compat
-
 # Export convenience functions, context types, update!() and digest!() functions
 export sha1, SHA1_CTX, update!, digest!
 export sha224, sha256, sha384, sha512
@@ -46,8 +42,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
 
     @eval begin
         # Our basic function is to process arrays of bytes
-        function $f(data::AbstractBytes)
-            ctx = $ctx()
+        function $f(data::AbstractBytes, ctx=$ctx())
             update!(ctx, data)
             return digest!(ctx)
         end
@@ -67,8 +62,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         # open("test.txt") do f
         #     sha256(f)
         # done
-        function $f(io::IO, chunk_size=4*1024)
-            ctx = $ctx()
+        function $f(io::IO, chunk_size=4*1024, ctx=$ctx())
             buff = Vector{UInt8}(uninitialized, chunk_size)
             while !eof(io)
                 num_read = readbytes!(io, buff)
