@@ -69,8 +69,10 @@ end
     # test hmac correctness using the examples from Wikipedia:
     # https://en.wikipedia.org/wiki/Hash-based_message_authentication_code#Examples
     for (key, msg, fun, hash) in hmac_data
-        digest = bytes2hex(fun(Vector{UInt8}(key), Vector{UInt8}(msg)))
-        @test digest == hash
+        digest1 = bytes2hex(fun(Vector{UInt8}(key), Vector{UInt8}(msg)))
+        digest2 = bytes2hex(fun(Vector{UInt8}(key), IOBuffer(msg)))
+        @test digest1 == hash
+        @test digest2 == hash
     end
 end
 
