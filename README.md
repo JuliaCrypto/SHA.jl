@@ -3,7 +3,15 @@
 [![Build Status](https://travis-ci.org/staticfloat/SHA.jl.svg?branch=master)](https://travis-ci.org/staticfloat/SHA.jl)
 [![codecov.io](http://codecov.io/github/staticfloat/SHA.jl/coverage.svg?branch=master)](http://codecov.io/github/staticfloat/SHA.jl?branch=master)
 
-Usage is very straightforward:
+## Setup
+
+Enter the Julia package manager by typing `]` into your REPL. Then type:
+```julia
+(@v1.6) pkg> add SHA
+```
+
+## Usage
+
 ```julia
 julia> using SHA
 
