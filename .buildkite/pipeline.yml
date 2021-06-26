@@ -4,7 +4,7 @@ steps:
       # Use `metahook` to modify the Project.toml to have a different UUID for testing
       - improbable-eng/metahook:
           post-checkout: |
-            sed -i '' -e 's/ea8e919c-243c-51af-8825-aaa63cd721ce/ea8e919c-243c-51af-8825-aaa63cd721cf/' Project.toml
+            sed -i'' -e 's/ea8e919c-243c-51af-8825-aaa63cd721ce/ea8e919c-243c-51af-8825-aaa63cd721cf/' Project.toml
       - JuliaCI/julia#v1:
           version: "1"
       - JuliaCI/julia-test#v1: ~
@@ -16,7 +16,7 @@ steps:
       # Use `metahook` to modify the Project.toml to have a different UUID for testing
       - improbable-eng/metahook:
           post-checkout: |
-            sed -i '' -e 's/ea8e919c-243c-51af-8825-aaa63cd721ce/ea8e919c-243c-51af-8825-aaa63cd721cf/' Project.toml
+            sed -i'' -e 's/ea8e919c-243c-51af-8825-aaa63cd721ce/ea8e919c-243c-51af-8825-aaa63cd721cf/' Project.toml
       - JuliaCI/julia#v1:
           version: "nightly"
       - JuliaCI/julia-test#v1: ~
