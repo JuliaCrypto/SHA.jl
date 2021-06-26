@@ -71,6 +71,8 @@ end
     for (key, msg, fun, hash) in hmac_data
         digest = bytes2hex(fun(Vector{UInt8}(key), Vector{UInt8}(msg)))
         @test digest == hash
+        digest = bytes2hex(fun(Vector{UInt8}(key), IOBuffer(msg)))
+        @test digest == hash
     end
 end
 
