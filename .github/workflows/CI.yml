@@ -38,6 +38,12 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.julia-version }}
+      # Alter the UUID so that we test this package instead of loading
+      # the version that is already built into a Julia's system image.
+      - name: alter UUID
+        shell: bash
+        run: |
+          sed -i'' -e 's/ea8e919c-243c-51af-8825-aaa63cd721ce/ea8e919c-243c-51af-8825-aaa63cd721cf/' Project.toml
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1
