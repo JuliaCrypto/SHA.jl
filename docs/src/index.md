@@ -2,7 +2,7 @@
 
 
 Usage is very straightforward:
-```julia
+```jldoctest
 julia> using SHA
 
 julia> bytes2hex(sha256("test"))
@@ -45,7 +45,9 @@ Due to the colloquial usage of `sha256` to refer to `sha2_256`, convenience func
 To create a hash from multiple items the `SHAX_XXX_CTX()` types can be used to create a stateful hash object that
 is updated with `update!` and finalized with `digest!`
 
-```julia
+```jldoctest
+julia> using SHA
+
 julia> ctx = SHA2_256_CTX()
 SHA2 256-bit hash state
 
@@ -63,11 +65,24 @@ julia> digest!(ctx)
  0xda
  0xaf
  0x02
+ 0xf7
+ 0xa3
+ 0x57
+ 0x92
+ 0x5b
+ 0xc5
+ 0xe1
     ⋮
- 0x25
- 0x52
  0x19
  0xa0
+ 0x1b
+ 0x89
+ 0x4f
+ 0x59
+ 0xd8
+ 0xb3
+ 0xb4
+ 0x81
  0x8b
  0xc5
 ```
