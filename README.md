@@ -1,7 +1,7 @@
 # SHA
 
-[![Run tests](https://github.com/JuliaCrypto/SHA.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaCrypto/SHA.jl/actions/workflows/CI.yml)
-[![codecov](https://codecov.io/gh/JuliaCrypto/SHA.jl/branch/master/graph/badge.svg)](https://app.codecov.io/gh/JuliaCrypto/SHA.jl)
+[![Build Status](https://github.com/JuliaCrypto/SHA.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaCrypto/SHA.jl/actions/workflows/CI.yml)
+[![codecov.io](https://codecov.io/gh/JuliaCrypto/SHA.jl/branch/master/graph/badge.svg)](https://app.codecov.io/gh/JuliaCrypto/SHA.jl)
 
 ## Setup
 
