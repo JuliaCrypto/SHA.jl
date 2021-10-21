@@ -1,6 +1,6 @@
 # SHA
 
-[![Build Status](https://travis-ci.org/staticfloat/SHA.jl.svg?branch=master)](https://travis-ci.org/staticfloat/SHA.jl)
+[![Run tests](https://github.com/JuliaCrypto/SHA.jl/actions/workflows/CI.yml/badge.svg)](https://github.com/JuliaCrypto/SHA.jl/actions/workflows/CI.yml)
 [![codecov](https://codecov.io/gh/JuliaCrypto/SHA.jl/branch/master/graph/badge.svg)](https://app.codecov.io/gh/JuliaCrypto/SHA.jl)
 
 ## Setup
