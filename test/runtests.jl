@@ -74,6 +74,23 @@ end
         digest = bytes2hex(fun(Vector{UInt8}(key), IOBuffer(msg)))
         @test digest == hash
     end
+
+    # help function for test: only accept `HMAC_CTX{SHA2_256_CTX}`
+    Base.:(==)(x::SHA2_256_CTX, y::SHA2_256_CTX) =
+        x.state==y.state && x.bytecount==y.bytecount && x.buffer==y.buffer
+    Base.:(==)(x::HMAC_CTX{SHA2_256_CTX}, y::HMAC_CTX{SHA2_256_CTX}) =
+        x.outer==y.outer && x.context==y.context
+
+    # Test if branch in `HMAC_CTX` constructor: 
+    key0 = sha256(zeros(UInt8, 128))
+    key = zeros(UInt8, 128)
+    blocksize = 64
+    # test with looong key
+    @assert length(key) > blocksize
+
+    s0 = HMAC_CTX(SHA2_256_CTX(), key0, blocksize)
+    s1 = HMAC_CTX(SHA2_256_CTX(), key, blocksize)
+    @test s0 == s1
 end
 
 replstr(x) = sprint((io, x) -> show(IOContext(io, :limit => true), MIME("text/plain"), x), x)
