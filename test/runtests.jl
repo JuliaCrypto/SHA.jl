@@ -43,12 +43,12 @@ end
     @testset "Chunked clumsily" begin
         for sha_idx in 1:length(sha_funcs)
             ctx = sha_types[sha_funcs[sha_idx]]()
-        
+
             # Get indices awkwardly placed for the blocklength of this hash type
             idx0 = round(Int, 0.3*SHA.blocklen(typeof(ctx)))
             idx1 = round(Int, 1.7*SHA.blocklen(typeof(ctx)))
             idx2 = round(Int, 2.6*SHA.blocklen(typeof(ctx)))
-        
+
             # Feed data in according to our dastardly blocking scheme
             SHA.update!(ctx, so_many_as_array[0      + 1:1*idx0])
             SHA.update!(ctx, so_many_as_array[1*idx0 + 1:2*idx0])
@@ -57,7 +57,7 @@ end
             SHA.update!(ctx, so_many_as_array[4*idx0 + 1:idx1])
             SHA.update!(ctx, so_many_as_array[idx1 + 1:idx2])
             SHA.update!(ctx, so_many_as_array[idx2 + 1:end])
-        
+
             # Ensure the hash is the appropriate one
             hash = bytes2hex(SHA.digest!(ctx))
             @test hash == answers[sha_funcs[sha_idx]][end]
