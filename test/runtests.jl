@@ -89,3 +89,10 @@ end
         @test_throws MethodError f(UInt32[0x23467, 0x324775])
     end
 end
+
+@testset "codecov" begin
+    @test_throws ErrorException("SHA2_CTX has no field _not_exist") SHA.SHA2_256_CTX()._not_exist
+    @test_throws ErrorException("type SHA3_256_CTX has no field _not_exist") SHA.SHA3_256_CTX()._not_exist
+    # default fallback
+    @test_throws ErrorException("type SHA1_CTX has no field _not_exist") SHA1_CTX()._not_exist
+end
