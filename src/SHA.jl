@@ -86,6 +86,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
             ctx = $ctx()
             update!(ctx, data)
             return digest!(ctx)
+        end
 
         """
             $($g)(key, data)
@@ -93,7 +94,6 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         Hash data using the $($f) algorithm using the passed key
         See also [`HMAC_CTX`](@ref).
         """
-        end
         function $g(key::Vector{UInt8}, data::AbstractBytes)
             ctx = HMAC_CTX($ctx(), key)
             update!(ctx, data)
