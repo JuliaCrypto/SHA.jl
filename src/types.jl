@@ -46,8 +46,6 @@ function Base.getproperty(ctx::SHA2_CTX, fieldname::Symbol)
         return getfield(ctx, :bytecount)::Union{UInt64,UInt128}
     elseif fieldname === :buffer
         return getfield(ctx, :buffer)::Vector{UInt8}
-    elseif fieldname === :W
-        return getfield(ctx, :W)::Vector{UInt32}
     else
         error("SHA2_CTX has no field ", fieldname)
     end
