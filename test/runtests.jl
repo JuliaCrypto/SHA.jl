@@ -19,6 +19,12 @@ end
                     sha_func = sha_funcs[sha_idx]
                     hash = bytes2hex(sha_func(deepcopy(data[idx])))
                     @test hash == answers[sha_func][idx]
+
+                    # Test sha_(::AbstractString)
+                    if data isa String
+                        sub_str = deepcopy(data[idx]) |> SubString
+                        @test bytes2hex(sha_func(sub_str)) == answers[sha_func][idx]
+                    end
                 end
             end
         end
@@ -99,6 +105,8 @@ end
         digest = bytes2hex(fun(Vector{UInt8}(key), Vector{UInt8}(msg)))
         @test digest == hash
         digest = bytes2hex(fun(Vector{UInt8}(key), IOBuffer(msg)))
+        @test digest == hash
+        digest = bytes2hex(fun(Vector{UInt8}(key), SubString(msg)))
         @test digest == hash
     end
 
