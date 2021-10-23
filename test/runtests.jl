@@ -1,5 +1,4 @@
 using SHA, Test
-using InteractiveUtils: subtypes
 
 include("constants.jl")
 
@@ -102,6 +101,6 @@ end
     #        SHA3-224 -256 -384 -512
     block_size = [144, 136, 104, 72]
     byte_count = 2 * sizeof(SHA.state_type(SHA.SHA3_CTX))
-    @assert length(subtypes(SHA.SHA3_CTX)) == length(block_size)
-    @test [ SHA.short_blocklen(T) for T in subtypes(SHA.SHA3_CTX) ] == (block_size .- byte_count)
+    sha3_types = [SHA.SHA3_224_CTX, SHA.SHA3_256_CTX, SHA.SHA3_384_CTX, SHA.SHA3_512_CTX]
+    @test [ SHA.short_blocklen(T) for T in sha3_types ] == (block_size .- byte_count)
 end
