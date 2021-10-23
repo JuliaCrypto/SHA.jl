@@ -1,4 +1,5 @@
 using SHA, Test
+using InteractiveUtils: subtypes
 
 include("constants.jl")
 
