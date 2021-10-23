@@ -21,7 +21,7 @@ end
                     @test hash == answers[sha_func][idx]
 
                     # Test sha_(::AbstractString)
-                    if data isa String
+                    if data[idx] isa String
                         sub_str = deepcopy(data[idx]) |> SubString
                         @test bytes2hex(sha_func(sub_str)) == answers[sha_func][idx]
                     end
