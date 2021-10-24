@@ -2,6 +2,7 @@ using SHA, Test
 
 include("constants.jl")
 include("cavs.jl")
+include("hmac.jl")
 
 
 function describe_hash(T::Type{S}) where {S <: SHA.SHA_CTX}
@@ -97,6 +98,16 @@ end
         @test digest == hash
         digest = bytes2hex(fun(Vector{UInt8}(key), IOBuffer(msg)))
         @test digest == hash
+    end
+
+    @testset "NIST example values test" begin
+        for (sha_func, test) in NIST_EXAMPLE_VAL
+            @testset "$(sha_func)" begin
+                for (key_len, msg, mac) in test
+                    @test sha_func(key_gen(key_len), msg) |> bytes2hex == lowercase.(mac)
+                end
+            end
+        end
     end
 end
 
