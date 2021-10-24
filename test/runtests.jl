@@ -1,6 +1,8 @@
 using SHA, Test
 
 include("constants.jl")
+include("cavs.jl")
+
 
 function describe_hash(T::Type{S}) where {S <: SHA.SHA_CTX}
     if T <: SHA.SHA1_CTX return "SHA1" end
@@ -19,6 +21,28 @@ end
                     sha_func = sha_funcs[sha_idx]
                     hash = bytes2hex(sha_func(deepcopy(data[idx])))
                     @test hash == answers[sha_func][idx]
+                end
+            end
+        end
+    end
+
+    @testset "NIST CAVS Test for SHA1/2" begin
+        for (sha_func, p) in CAVS_TESTSET_12
+            hash = sha12_csvs_msg(sha_func)
+            @testset "$(p.name)" begin
+                for (idx, val) in p.cavs_vec
+                    @test hash[idx+1] == val
+                end
+            end
+        end
+    end
+
+    @testset "NIST CAVS Test for SHA3" begin
+        for (sha_func, p) in CAVS_TESTSET_3
+            hash = sha3_csvs_msg(sha_func)
+            @testset "$(p.name)" begin
+                for (idx, val) in p.cavs_vec
+                    @test hash[idx+1] == val
                 end
             end
         end
