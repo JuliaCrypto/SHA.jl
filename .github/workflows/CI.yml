@@ -49,3 +49,18 @@ jobs:
       - uses: codecov/codecov-action@v1
         with:
           file: lcov.info
+  doctests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+      - uses: julia-actions/setup-julia@v1
+        with:
+          version: 'nightly'
+      - run: julia --color=yes .ci/test_and_change_uuid.jl
+      - run: julia --project=docs --color=yes -e 'using Pkg; Pkg.instantiate()'
+      - run: julia --project=docs --color=yes -e 'using Pkg; Pkg.develop(PackageSpec(path = pwd()))'
+      - name: Run doctests
+        run: julia --project=docs --color=yes -e 'import SHA; import Documenter; Documenter.doctest(SHA)'
