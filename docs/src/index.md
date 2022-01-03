@@ -129,39 +129,6 @@ digest!
 
 ### All SHA context types
 
-```jldoctest
-julia> subtypes(SHA.SHA_CTX)
-3-element Vector{Any}:
- SHA.SHA2_CTX
- SHA.SHA3_CTX
- SHA1_CTX
-
-julia> subtypes(SHA.SHA2_CTX)
-4-element Vector{Any}:
- SHA2_224_CTX
- SHA2_256_CTX
- SHA2_384_CTX
- SHA2_512_CTX
-
-julia> subtypes(SHA.SHA3_CTX)
-4-element Vector{Any}:
- SHA3_224_CTX
- SHA3_256_CTX
- SHA3_384_CTX
- SHA3_512_CTX
-```
-
-!!! warning "Warning about `SHA?_CTX` types"
-    Note that all `SHA?_CTX` types are AbstractType, you cannot instantiate them.
-
-    ```jldoctest
-    julia> isabstracttype.([SHA.SHA_CTX, SHA.SHA2_CTX, SHA.SHA3_CTX])
-    3-element BitVector:
-     1
-     1
-     1
-    ```
-
 **SHA-1**
 ```@docs
 SHA1_CTX
