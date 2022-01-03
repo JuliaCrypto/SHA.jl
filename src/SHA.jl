@@ -79,7 +79,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         """
             $($f)(data)
 
-        Hash data using the $($f) algorithm and return the resulting digest.
+        Hash data using the `$($f)` algorithm and return the resulting digest.
         See also [`$($ctx)`](@ref).
         """
         function $f(data::AbstractBytes)
@@ -91,7 +91,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         """
             $($g)(key, data)
 
-        Hash data using the $($f) algorithm using the passed key
+        Hash data using the `$($f)` algorithm using the passed key.
         See also [`HMAC_CTX`](@ref).
         """
         function $g(key::Vector{UInt8}, data::AbstractBytes)
@@ -109,7 +109,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         """
             $($f)(io::IO)
 
-        Hash data from io using $($f) algorithm from io.
+        Hash data from io using `$($f)` algorithm.
         """
         function $f(io::IO, chunk_size=4*1024)
             ctx = $ctx()
