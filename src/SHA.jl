@@ -124,7 +124,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         """
             $($g)(key, io::IO)
 
-        Hash data from io with the passed key using `$($f)` algorithm.
+        Hash data from `io` with the passed key using `$($f)` algorithm.
         """
         function $g(key::Vector{UInt8}, io::IO, chunk_size=4*1024)
             ctx = HMAC_CTX($ctx(), key)
