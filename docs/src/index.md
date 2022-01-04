@@ -136,7 +136,7 @@ SHA1_CTX
 
 **SHA-2**
 
-Convenient types are also provided, `SHAXXX_CTX` is a type alias for `SHA2_XXX_CTX`.
+Convenience types are also provided, where `SHAXXX_CTX` is a type alias for `SHA2_XXX_CTX`.
 ```@docs
 SHA224_CTX
 SHA256_CTX
