@@ -79,21 +79,21 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         """
             $($f)(data)
 
-        Hash data using the $($f) algorithm and return the resulting digest.
+        Hash data using the `$($f)` algorithm and return the resulting digest.
         See also [`$($ctx)`](@ref).
         """
         function $f(data::AbstractBytes)
             ctx = $ctx()
             update!(ctx, data)
             return digest!(ctx)
+        end
 
         """
             $($g)(key, data)
 
-        Hash data using the $($f) algorithm using the passed key
+        Hash data using the `$($f)` algorithm using the passed key.
         See also [`HMAC_CTX`](@ref).
         """
-        end
         function $g(key::Vector{UInt8}, data::AbstractBytes)
             ctx = HMAC_CTX($ctx(), key)
             update!(ctx, data)
@@ -109,7 +109,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         """
             $($f)(io::IO)
 
-        Hash data from io using $($f) algorithm from io.
+        Hash data from io using `$($f)` algorithm.
         """
         function $f(io::IO, chunk_size=4*1024)
             ctx = $ctx()
@@ -120,6 +120,12 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
             end
             return digest!(ctx)
         end
+
+        """
+            $($g)(key, io::IO)
+
+        Hash data from `io` with the passed key using `$($f)` algorithm.
+        """
         function $g(key::Vector{UInt8}, io::IO, chunk_size=4*1024)
             ctx = HMAC_CTX($ctx(), key)
             buff = Vector{UInt8}(undef, chunk_size)
