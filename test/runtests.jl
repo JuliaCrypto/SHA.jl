@@ -8,7 +8,7 @@ function describe_hash(T::Type{S}) where {S <: SHA.SHA_CTX}
     if T <: SHA.SHA3_CTX return "SHA3-$(SHA.digestlen(T)*8)" end
 end
 
-@info("Loaded hash types: $(join(sort([describe_hash(t[2]) for t in sha_types]), ", ", " and "))")
+@debug("Loaded hash types: $(join(sort([describe_hash(t[2]) for t in sha_types]), ", ", " and "))")
 
 @testset "Hashing" begin
     # First, test processing the data in one go
