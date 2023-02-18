@@ -17,6 +17,7 @@ julia> update!(ctx, b"data to to be hashed")
 ```
 """
 function update!(context::T, data::U, datalen=length(data)) where {T<:SHA_CTX, U<:AbstractBytes}
+    context.used && error("Cannot update CTX after `digest!` has been called on it")
     # We need to do all our arithmetic in the proper bitwidth
     UIntXXX = typeof(context.bytecount)
 
@@ -82,6 +83,7 @@ end
     digest!(context)
 
 Finalize the SHA context and return the hash as array of bytes (Array{Uint8, 1}).
+Updating the context after calling `digest!` on it will error.
 
 # Examples
 ```julia-repl
@@ -97,18 +99,26 @@ julia> digest!(ctx)
  ⋮
  0x89
  0xf5
+
+julia> update!(ctx, b"more data")
+ERROR: Cannot update CTX after `digest!` has been called on it
+[...]
 ```
 """
 function digest!(context::T) where T<:SHA_CTX
-    pad_remainder!(context)
-    # Store the length of the input data (in bits) at the end of the padding
-    bitcount_idx = div(short_blocklen(T), sizeof(context.bytecount)) + 1
-    pbuf = Ptr{typeof(context.bytecount)}(pointer(context.buffer))
-    unsafe_store!(pbuf, bswap(context.bytecount * 8), bitcount_idx)
+    if !context.used
+        pad_remainder!(context)
+        # Store the length of the input data (in bits) at the end of the padding
+        bitcount_idx = div(short_blocklen(T), sizeof(context.bytecount)) + 1
+        pbuf = Ptr{typeof(context.bytecount)}(pointer(context.buffer))
+        unsafe_store!(pbuf, bswap(context.bytecount * 8), bitcount_idx)
 
-    # Final transform:
-    transform!(context)
+        # Final transform:
+        transform!(context)
+        bswap!(context.state)
+        context.used = true
+    end
 
     # Return the digest
-    return reinterpret(UInt8, bswap!(context.state))[1:digestlen(T)]
+    return reinterpret(UInt8, context.state)[1:digestlen(T)]
 end

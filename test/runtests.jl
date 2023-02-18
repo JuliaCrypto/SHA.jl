@@ -63,6 +63,23 @@ end
             @test hash == answers[sha_funcs[sha_idx]][end]
         end
     end
+
+    # Test that the hash states cannot be updated after having been finalized,
+    # but can still return the same digest
+    @testset "Reuse" begin
+        for sha_idx in 1:length(sha_funcs)
+            ctx = sha_types[sha_funcs[sha_idx]]()
+            update!(ctx, codeunits("abracadabra"))
+            hash1 = digest!(ctx)
+
+            # Cannot update after having been digested
+            @test_throws Exception update!(ctx, codeunits("abc"))
+
+            # But will still return the same digest twice
+            hash2 = digest!(ctx)
+            @test hash1 == hash2
+        end
+    end
 end
 
 @testset "HMAC" begin
