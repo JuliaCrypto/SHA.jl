@@ -1,11 +1,11 @@
 function transform!(context::T) where {T<:SHA3_CTX}
     # First, update state with buffer
-    pbuf = Ptr{eltype(context.state)}(pointer(context.buffer))
-    for idx in 1:div(blocklen(T),8)
-        context.state[idx] = context.state[idx] ⊻ unsafe_load(pbuf, idx)
+    pbuf = Ptr{UInt64}(pointer(context.buffer))
+    state = context.state::Vector{UInt64}
+    for idx in 1:div(blocklen(T)::UInt64, 8)
+        state[idx] = state[idx] ⊻ unsafe_load(pbuf, idx)
     end
-    bc = context.bc
-    state = context.state
+    bc = context.bc::Vector{UInt64}
 
     # We always assume 24 rounds
     @inbounds for round in 0:23
@@ -48,16 +48,16 @@ function transform!(context::T) where {T<:SHA3_CTX}
         state[1] = state[1] ⊻ SHA3_ROUND_CONSTS[round+1]
     end
 
-    return context.state
+    return state
 end
 
 
 
 # Finalize data in the buffer, append total bitlength, and return our precious hash!
 function digest!(context::T) where {T<:SHA3_CTX}
-    usedspace = context.bytecount % blocklen(T)
+    usedspace = context.bytecount::UInt128 % blocklen(T)::UInt64
     # If we have anything in the buffer still, pad and transform that data
-    if usedspace < blocklen(T) - 1
+    if usedspace < blocklen(T)::UInt64 - 1
         # Begin padding with a 0x06
         context.buffer[usedspace+1] = 0x06
         # Fill with zeros up until the last byte
@@ -77,5 +77,5 @@ function digest!(context::T) where {T<:SHA3_CTX}
     transform!(context)
 
     # Return the digest
-    return reinterpret(UInt8, context.state)[1:digestlen(T)]
+    return reinterpret(UInt8, context.state)[1:digestlen(T)::Int]
 end
