@@ -27,10 +27,10 @@ macro R1_16(j, T)
         unsafe_store!(pbuf, v, $j)
 
         # Apply the SHA-256 compression function to update a..h
-        T1 = $h + $Sigma1($e) + Ch($e, $f, $g) + $K[$j] + v
-        $h = $Sigma0($a) + Maj($a, $b, $c)
-        $d += T1
-        $h += T1
+        T1 = $h +% $Sigma1($e) +% Ch($e, $f, $g) +% $K[$j] +% v
+        $h = $Sigma0($a) +% Maj($a, $b, $c)
+        $d +%= T1
+        $h +%= T1
     end)
 end
 
@@ -68,12 +68,12 @@ macro R17_80(j, T)
         s1 = $sigma1(s1)
 
         # Apply the SHA-256 compression function to update a..h
-        v = unsafe_load(pbuf, mod1($j, 16)) + s1 + unsafe_load(pbuf, mod1($j + 9, 16)) + s0
+        v = unsafe_load(pbuf, mod1($j, 16)) +% s1 +% unsafe_load(pbuf, mod1($j + 9, 16)) +% s0
         unsafe_store!(pbuf, v, mod1($j, 16))
-        T1 = $h + $Sigma1($e) + Ch($e, $f, $g) + $K[$j] + v
-        $h = $Sigma0($a) + Maj($a, $b, $c)
-        $d += T1
-        $h += T1
+        T1 = $h +% $Sigma1($e) +% Ch($e, $f, $g) +% $K[$j] +% v
+        $h = $Sigma0($a) +% Maj($a, $b, $c)
+        $d +%= T1
+        $h +%= T1
     end)
 end
 
@@ -122,14 +122,14 @@ end
 
         # Compute the current intermediate hash value
         @inbounds begin
-            context.state[1] += a
-            context.state[2] += b
-            context.state[3] += c
-            context.state[4] += d
-            context.state[5] += e
-            context.state[6] += f
-            context.state[7] += g
-            context.state[8] += h
+            context.state[1] +%= a
+            context.state[2] +%= b
+            context.state[3] +%= c
+            context.state[4] +%= d
+            context.state[5] +%= e
+            context.state[6] +%= f
+            context.state[7] +%= g
+            context.state[8] +%= h
         end
     end
 end
