@@ -87,7 +87,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         See also [`$($ctx)`](@ref).
         """
         function $f(data::AbstractBytes)
-            _ = $ctx()
+            ctx = $ctx()
             update!(ctx, data)
             return digest!(ctx)
         end
@@ -116,7 +116,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         Hash data from io using `$($f)` algorithm.
         """
         function $f(io::IO, chunk_size=4*1024)
-            _ = $ctx()
+            ctx = $ctx()
             buff = Vector{UInt8}(undef, chunk_size)
             while !eof(io)
                 num_read = readbytes!(io, buff)
