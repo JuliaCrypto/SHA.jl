@@ -141,3 +141,22 @@ end
         @test_throws MethodError f(UInt32[0x23467, 0x324775])
     end
 end
+
+@testset "SHAKE" begin
+    @testset "shake128" begin
+        for  (k,v) in SHA128test
+            @test SHA.shake128(hex2bytes(k[1]),k[2]) == hex2bytes(v)
+        end
+        @test SHA.shake128(b"",UInt(16)) == hex2bytes("7f9c2ba4e88f827d616045507605853e")
+    end
+
+    @testset "shake256" begin
+        for  (k,v) in SHA256test
+            @test SHA.shake256(hex2bytes(k[1]),k[2]) == hex2bytes(v)
+        end
+        @test SHA.shake256(b"",UInt(32)) == hex2bytes("46b9dd2b0ba88d13233b3feb743eeb243fcd52ea62b81b82b50c27646ed5762f")
+    end
+    @time SHA.shake256(b"abc",UInt(100000))
+    @time SHA.shake128(b"abc",UInt(100000))
+end
+ 

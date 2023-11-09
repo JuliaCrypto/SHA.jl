@@ -74,7 +74,7 @@ function transform!(context::T) where {T<:SHAKE}
     end
     return context.state
 end
-function digest!(context::T,d::UInt,p) where {T<:SHAKE}
+function digest!(context::T,d::UInt,p::Ptr{UInt8}) where {T<:SHAKE}
     usedspace = context.bytecount % blocklen(T)
     # If we have anything in the buffer still, pad and transform that data
     if usedspace < blocklen(T) - 1
@@ -113,7 +113,7 @@ end
 function shake128(data::AbstractBytes,d::UInt)
     ctx = SHAKE_128_CTX()
     update!(ctx, data)
-    M = Array{UInt8,1}(undef,d) # prealloc
+    M = Array{UInt8,1}(undef,d)     # prealloc
     p = pointer(M)
     digest!(ctx,d,p)
     return M
@@ -121,7 +121,7 @@ end
 function shake256(data::AbstractBytes,d::UInt)
     ctx = SHAKE_256_CTX()
     update!(ctx, data)
-    M = Array{UInt8,1}(undef,d) # prealloc
+    M = Array{UInt8,1}(undef,d)     # prealloc
     p = pointer(M)
     digest!(ctx,d,p)
     return M
