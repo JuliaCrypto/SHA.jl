@@ -49,6 +49,10 @@ export hmac_sha2_224, hmac_sha2_256, hmac_sha2_384, hmac_sha2_512
 export hmac_sha3_224, hmac_sha3_256, hmac_sha3_384, hmac_sha3_512
 
 # data to be hashed:
+"""
+
+        Union{AbstractVector{UInt8}, NTuple{N, UInt8} where N}
+"""
 const AbstractBytes = Union{AbstractVector{UInt8},NTuple{N,UInt8} where N}
 
 include("constants.jl")

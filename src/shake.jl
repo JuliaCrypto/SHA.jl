@@ -44,10 +44,8 @@ function transform!(context::T) where {T<:SHAKE}
         end
         for i in 0:4
             temp = bc[rem(i + 4, 5) + 1] ⊻ L64(1, bc[rem(i + 1, 5) + 1])
-            j = 0
-            while j <= 20
+            for j in 0:5:20
                 state[Int(i + j + 1)] = state[i + j + 1] ⊻ temp
-                j += 5
             end
         end
         # Rho Pi
@@ -59,15 +57,13 @@ function transform!(context::T) where {T<:SHAKE}
             temp = bc[1]
         end
         # Chi
-        j = 0
-        while j <= 20
+        for j in 0:5:20
             for i in 1:5
                 bc[i] = state[i + j]
             end
             for i in 0:4
                 state[j + i + 1] = state[j + i + 1] ⊻ (~bc[rem(i + 1, 5) + 1] & bc[rem(i + 2, 5) + 1])
             end
-            j += 5
         end
         # Iota
         state[1] = state[1] ⊻ SHA3_ROUND_CONSTS[round+1]
@@ -110,6 +106,11 @@ function digest!(context::T,d::UInt,p::Ptr{UInt8}) where {T<:SHAKE}
         return 
     end
 end
+"""
+            shake128(data::AbstractBytes,d::UInt)
+
+        Hash data using the `shake128` algorithm and return the first d resulting bytes.
+"""
 function shake128(data::AbstractBytes,d::UInt)
     ctx = SHAKE_128_CTX()
     update!(ctx, data)
@@ -118,6 +119,11 @@ function shake128(data::AbstractBytes,d::UInt)
     digest!(ctx,d,p)
     return M
 end
+"""
+            shake256(data::AbstractBytes,d::UInt)
+
+        Hash data using the `shake258` algorithm and return the first d resulting bytes.
+"""
 function shake256(data::AbstractBytes,d::UInt)
     ctx = SHAKE_256_CTX()
     update!(ctx, data)
