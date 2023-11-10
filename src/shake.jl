@@ -107,9 +107,9 @@ function digest!(context::T,d::UInt,p::Ptr{UInt8}) where {T<:SHAKE}
     end
 end
 """
-            shake128(data::AbstractBytes,d::UInt)
+    shake128(data::AbstractBytes,d::UInt)
 
-        Hash data using the `shake128` algorithm and return the first d resulting bytes.
+Hash data using the `shake128` algorithm and return the first d resulting bytes.
 """
 function shake128(data::AbstractBytes,d::UInt)
     ctx = SHAKE_128_CTX()
