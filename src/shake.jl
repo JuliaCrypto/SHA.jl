@@ -120,9 +120,9 @@ function shake128(data::AbstractBytes,d::UInt)
     return M
 end
 """
-            shake256(data::AbstractBytes,d::UInt)
+    shake256(data::AbstractBytes,d::UInt)
 
-        Hash data using the `shake258` algorithm and return the first d resulting bytes.
+Hash data using the `shake258` algorithm and return the first d resulting bytes.
 """
 function shake256(data::AbstractBytes,d::UInt)
     ctx = SHAKE_256_CTX()
