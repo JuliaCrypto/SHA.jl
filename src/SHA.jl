@@ -38,15 +38,20 @@ export sha1, SHA1_CTX, update!, digest!
 export sha224, sha256, sha384, sha512
 export sha2_224, sha2_256, sha2_384, sha2_512
 export sha3_224, sha3_256, sha3_384, sha3_512
+export shake_128, shake_256
 export SHA224_CTX, SHA256_CTX, SHA384_CTX, SHA512_CTX
 export SHA2_224_CTX, SHA2_256_CTX, SHA2_384_CTX, SHA2_512_CTX
 export SHA3_224_CTX, SHA3_256_CTX, SHA3_384_CTX, SHA3_512_CTX
+export SHAKE_128_CTX, SHAKE_256_CTX
 export HMAC_CTX, hmac_sha1
 export hmac_sha224, hmac_sha256, hmac_sha384, hmac_sha512
 export hmac_sha2_224, hmac_sha2_256, hmac_sha2_384, hmac_sha2_512
 export hmac_sha3_224, hmac_sha3_256, hmac_sha3_384, hmac_sha3_512
 
 # data to be hashed:
+"""
+Union{AbstractVector{UInt8}, NTuple{N, UInt8} where N}
+"""
 const AbstractBytes = Union{AbstractVector{UInt8},NTuple{N,UInt8} where N}
 
 include("constants.jl")
@@ -55,6 +60,7 @@ include("base_functions.jl")
 include("sha1.jl")
 include("sha2.jl")
 include("sha3.jl")
+include("shake.jl")
 include("common.jl")
 include("hmac.jl")
 
@@ -71,7 +77,8 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
                  (:sha3_224, :SHA3_224_CTX),
                  (:sha3_256, :SHA3_256_CTX),
                  (:sha3_384, :SHA3_384_CTX),
-                 (:sha3_512, :SHA3_512_CTX),]
+                 (:sha3_512, :SHA3_512_CTX),
+                 (:shake_256, :SHAKE_256_CTX),]
     g = Symbol(:hmac_, f)
 
     @eval begin
