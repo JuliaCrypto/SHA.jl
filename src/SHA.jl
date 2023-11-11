@@ -77,7 +77,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
                  (:sha3_224, :SHA3_224_CTX),
                  (:sha3_256, :SHA3_256_CTX),
                  (:sha3_384, :SHA3_384_CTX),
-                 (:sha3_512, :SHA3_512_CTX),]
+                 (:sha3_512, :SHA3_512_CTX)]
     g = Symbol(:hmac_, f)
 
     @eval begin
