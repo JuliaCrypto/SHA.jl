@@ -51,12 +51,10 @@ function Base.getproperty(ctx::SHA2_CTX, fieldname::Symbol)
         return getfield(ctx, :bytecount)::Union{UInt64,UInt128}
     elseif fieldname === :buffer
         return getfield(ctx, :buffer)::Vector{UInt8}
-    elseif fieldname === :W
-        return getfield(ctx, :W)::Vector{UInt32}
     elseif fieldname === :used
         return getfield(ctx, :used)::Bool
     else
-        error("SHA2_CTX has no field ", fieldname)
+        error("type ", typeof(ctx), " has no field ", fieldname)
     end
 end
 
@@ -133,7 +131,7 @@ state_type(::Type{SHA2_224_CTX}) = UInt32
 state_type(::Type{SHA2_256_CTX}) = UInt32
 state_type(::Type{SHA2_384_CTX}) = UInt64
 state_type(::Type{SHA2_512_CTX}) = UInt64
-state_type(::Type{SHA3_CTX}) = UInt64
+state_type(::Type{T}) where {T<:SHA3_CTX} = UInt64
 
 # blocklen is the number of bytes of data processed by the transform!() function at once
 blocklen(::Type{SHA1_CTX}) = UInt64(64)

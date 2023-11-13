@@ -49,12 +49,12 @@ end
     @testset "Chunked clumsily" begin
         for sha_idx in 1:length(sha_funcs)
             ctx = sha_types[sha_funcs[sha_idx]]()
-        
+
             # Get indices awkwardly placed for the blocklength of this hash type
             idx0 = round(Int, 0.3*SHA.blocklen(typeof(ctx)))
             idx1 = round(Int, 1.7*SHA.blocklen(typeof(ctx)))
             idx2 = round(Int, 2.6*SHA.blocklen(typeof(ctx)))
-        
+
             # Feed data in according to our dastardly blocking scheme
             SHA.update!(ctx, so_many_as_array[0      + 1:1*idx0])
             SHA.update!(ctx, so_many_as_array[1*idx0 + 1:2*idx0])
@@ -63,7 +63,7 @@ end
             SHA.update!(ctx, so_many_as_array[4*idx0 + 1:idx1])
             SHA.update!(ctx, so_many_as_array[idx1 + 1:idx2])
             SHA.update!(ctx, so_many_as_array[idx2 + 1:end])
-        
+
             # Ensure the hash is the appropriate one
             hash = bytes2hex(SHA.digest!(ctx))
             @test hash == answers[sha_funcs[sha_idx]][end]
@@ -142,6 +142,21 @@ end
     end
 end
 
+@testset "codecov" begin
+    @test_throws ErrorException("type SHA2_256_CTX has no field _not_exist") SHA.SHA2_256_CTX()._not_exist
+    @test_throws ErrorException("type SHA3_256_CTX has no field _not_exist") SHA.SHA3_256_CTX()._not_exist
+    # default fallback
+    @test_throws ErrorException("type SHA1_CTX has no field _not_exist") SHA.SHA1_CTX()._not_exist
+
+    # Table 3: Input block sizes for HMAC
+    #   https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
+    #        SHA3-224 -256 -384 -512
+    block_size = [144, 136, 104, 72]
+    byte_count = 2 * sizeof(SHA.state_type(SHA.SHA3_CTX))
+    sha3_types = [SHA.SHA3_224_CTX, SHA.SHA3_256_CTX, SHA.SHA3_384_CTX, SHA.SHA3_512_CTX]
+    @test [ SHA.short_blocklen(T) for T in sha3_types ] == (block_size .- byte_count)
+end
+
 @testset "SHAKE" begin
     # test some official testvectors from https://csrc.nist.gov/Projects/Cryptographic-Algorithm-Validation-Program/Secure-Hashing
     @testset "shake128" begin
@@ -160,4 +175,3 @@ end
     @time SHA.shake256(b"abc",UInt(100000))
     @time SHA.shake128(b"abc",UInt(100000))
 end
- 
