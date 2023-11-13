@@ -55,26 +55,29 @@ end
 
 # Finalize data in the buffer, append total bitlength, and return our precious hash!
 function digest!(context::T) where {T<:SHA3_CTX}
-    usedspace = context.bytecount % blocklen(T)
-    # If we have anything in the buffer still, pad and transform that data
-    if usedspace < blocklen(T) - 1
-        # Begin padding with a 0x06
-        context.buffer[usedspace+1] = 0x06
-        # Fill with zeros up until the last byte
-        context.buffer[usedspace+2:end-1] .= 0x00
-        # Finish it off with a 0x80
-        context.buffer[end] = 0x80
-    else
-        # Otherwise, we have to add on a whole new buffer just for the zeros and 0x80
-        context.buffer[end] = 0x06
+    if !context.used
+        usedspace = context.bytecount % blocklen(T)
+        # If we have anything in the buffer still, pad and transform that data
+        if usedspace < blocklen(T) - 1
+            # Begin padding with a 0x06
+            context.buffer[usedspace+1] = 0x06
+            # Fill with zeros up until the last byte
+            context.buffer[usedspace+2:end-1] .= 0x00
+            # Finish it off with a 0x80
+            context.buffer[end] = 0x80
+        else
+            # Otherwise, we have to add on a whole new buffer just for the zeros and 0x80
+            context.buffer[end] = 0x06
+            transform!(context)
+
+            context.buffer[1:end-1] .= 0x0
+            context.buffer[end] = 0x80
+        end
+
+        # Final transform:
         transform!(context)
-
-        context.buffer[1:end-1] .= 0x0
-        context.buffer[end] = 0x80
+        context.used = true
     end
-
-    # Final transform:
-    transform!(context)
 
     # Return the digest
     return reinterpret(UInt8, context.state)[1:digestlen(T)]

@@ -38,15 +38,20 @@ export sha1, SHA1_CTX, update!, digest!
 export sha224, sha256, sha384, sha512
 export sha2_224, sha2_256, sha2_384, sha2_512
 export sha3_224, sha3_256, sha3_384, sha3_512
+export shake128, shake256
 export SHA224_CTX, SHA256_CTX, SHA384_CTX, SHA512_CTX
 export SHA2_224_CTX, SHA2_256_CTX, SHA2_384_CTX, SHA2_512_CTX
 export SHA3_224_CTX, SHA3_256_CTX, SHA3_384_CTX, SHA3_512_CTX
+export SHAKE_128_CTX, SHAKE_256_CTX
 export HMAC_CTX, hmac_sha1
 export hmac_sha224, hmac_sha256, hmac_sha384, hmac_sha512
 export hmac_sha2_224, hmac_sha2_256, hmac_sha2_384, hmac_sha2_512
 export hmac_sha3_224, hmac_sha3_256, hmac_sha3_384, hmac_sha3_512
 
 # data to be hashed:
+"""
+Union{AbstractVector{UInt8}, NTuple{N, UInt8} where N}
+"""
 const AbstractBytes = Union{AbstractVector{UInt8},NTuple{N,UInt8} where N}
 
 include("constants.jl")
@@ -55,6 +60,7 @@ include("base_functions.jl")
 include("sha1.jl")
 include("sha2.jl")
 include("sha3.jl")
+include("shake.jl")
 include("common.jl")
 include("hmac.jl")
 
@@ -71,7 +77,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
                  (:sha3_224, :SHA3_224_CTX),
                  (:sha3_256, :SHA3_256_CTX),
                  (:sha3_384, :SHA3_384_CTX),
-                 (:sha3_512, :SHA3_512_CTX),]
+                 (:sha3_512, :SHA3_512_CTX)]
     g = Symbol(:hmac_, f)
 
     @eval begin
@@ -79,21 +85,21 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         """
             $($f)(data)
 
-        Hash data using the $($f) algorithm and return the resulting digest.
+        Hash data using the `$($f)` algorithm and return the resulting digest.
         See also [`$($ctx)`](@ref).
         """
         function $f(data::AbstractBytes)
             ctx = $ctx()
             update!(ctx, data)
             return digest!(ctx)
+        end
 
         """
             $($g)(key, data)
 
-        Hash data using the $($f) algorithm using the passed key
+        Hash data using the `$($f)` algorithm using the passed key.
         See also [`HMAC_CTX`](@ref).
         """
-        end
         function $g(key::Vector{UInt8}, data::AbstractBytes)
             ctx = HMAC_CTX($ctx(), key)
             update!(ctx, data)
@@ -109,7 +115,7 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
         """
             $($f)(io::IO)
 
-        Hash data from io using $($f) algorithm from io.
+        Hash data from io using `$($f)` algorithm.
         """
         function $f(io::IO, chunk_size=4*1024)
             ctx = $ctx()
@@ -120,6 +126,12 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
             end
             return digest!(ctx)
         end
+
+        """
+            $($g)(key, io::IO)
+
+        Hash data from `io` with the passed key using `$($f)` algorithm.
+        """
         function $g(key::Vector{UInt8}, io::IO, chunk_size=4*1024)
             ctx = HMAC_CTX($ctx(), key)
             buff = Vector{UInt8}(undef, chunk_size)
