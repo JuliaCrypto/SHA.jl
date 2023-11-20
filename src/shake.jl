@@ -82,10 +82,7 @@ function digest!(context::T,d::UInt,p::Ptr{UInt8}) where {T<:SHAKE}
         context.buffer[end] = 0x80
     else
         # Otherwise, we have to add on a whole new buffer
-        context.buffer[end] = 0x1f
-        transform!(context)
-        context.buffer[1:end-1] .= 0x0
-        context.buffer[end] = 0x80
+        context.buffer[end] = 0x9f
     end
     # Final transform:
     transform!(context)
