@@ -44,6 +44,20 @@ mutable struct SHA2_512_CTX <: SHA2_CTX
     used::Bool
 end
 
+mutable struct SHA2_512_224_CTX <: SHA2_CTX
+    state::Array{UInt64,1}
+    bytecount::UInt128
+    buffer::Array{UInt8,1}
+    used::Bool
+end
+
+mutable struct SHA2_512_256_CTX <: SHA2_CTX
+    state::Array{UInt64,1}
+    bytecount::UInt128
+    buffer::Array{UInt8,1}
+    used::Bool
+end
+
 function Base.getproperty(ctx::SHA2_CTX, fieldname::Symbol)
     if fieldname === :state
         return getfield(ctx, :state)::Union{Vector{UInt32},Vector{UInt64}}
@@ -64,7 +78,8 @@ const SHA224_CTX = SHA2_224_CTX
 const SHA256_CTX = SHA2_256_CTX
 const SHA384_CTX = SHA2_384_CTX
 const SHA512_CTX = SHA2_512_CTX
-
+const SHA512_224_CTX = SHA2_512_224_CTX
+const SHA512_256_CTX = SHA2_512_256_CTX
 
 # SHA3 224/256/384/512-bit context structures
 mutable struct SHA3_224_CTX <: SHA3_CTX
@@ -123,6 +138,8 @@ digestlen(::Type{SHA3_256_CTX}) = 32
 digestlen(::Type{SHA2_384_CTX}) = 48
 digestlen(::Type{SHA3_384_CTX}) = 48
 digestlen(::Type{SHA2_512_CTX}) = 64
+digestlen(::Type{SHA2_512_224_CTX}) = 28
+digestlen(::Type{SHA2_512_256_CTX}) = 32
 digestlen(::Type{SHA3_512_CTX}) = 64
 
 # SHA1 and SHA2 have differing element types for the internal state objects
@@ -131,6 +148,8 @@ state_type(::Type{SHA2_224_CTX}) = UInt32
 state_type(::Type{SHA2_256_CTX}) = UInt32
 state_type(::Type{SHA2_384_CTX}) = UInt64
 state_type(::Type{SHA2_512_CTX}) = UInt64
+state_type(::Type{SHA2_512_224_CTX}) = UInt64
+state_type(::Type{SHA2_512_256_CTX}) = UInt64
 state_type(::Type{T}) where {T<:SHA3_CTX} = UInt64
 
 # blocklen is the number of bytes of data processed by the transform!() function at once
@@ -139,7 +158,8 @@ blocklen(::Type{SHA2_224_CTX}) = UInt64(64)
 blocklen(::Type{SHA2_256_CTX}) = UInt64(64)
 blocklen(::Type{SHA2_384_CTX}) = UInt64(128)
 blocklen(::Type{SHA2_512_CTX}) = UInt64(128)
-
+blocklen(::Type{SHA2_512_224_CTX}) = UInt64(128)
+blocklen(::Type{SHA2_512_256_CTX}) = UInt64(128)
 blocklen(::Type{SHA3_224_CTX}) = UInt64(25*8 - 2*digestlen(SHA3_224_CTX))
 blocklen(::Type{SHA3_256_CTX}) = UInt64(25*8 - 2*digestlen(SHA3_256_CTX))
 blocklen(::Type{SHA3_384_CTX}) = UInt64(25*8 - 2*digestlen(SHA3_384_CTX))
@@ -175,6 +195,18 @@ SHA2_384_CTX() = SHA2_384_CTX(copy(SHA2_384_initial_hash_value), 0, zeros(UInt8,
 Construct an empty SHA2_512 context.
 """
 SHA2_512_CTX() = SHA2_512_CTX(copy(SHA2_512_initial_hash_value), 0, zeros(UInt8, blocklen(SHA2_512_CTX)), false)
+"""
+    SHA2_512_224_CTX()
+
+Construct an empty SHA2_512/224 context.
+"""
+SHA2_512_224_CTX() = SHA2_512_224_CTX(copy(SHA2_512_224_initial_hash_value), 0, zeros(UInt8, blocklen(SHA2_512_224_CTX)), false)
+"""
+    SHA2_512_256_CTX()
+
+Construct an empty SHA2_512/256 context.
+"""
+SHA2_512_256_CTX() = SHA2_512_256_CTX(copy(SHA2_512_256_initial_hash_value), 0, zeros(UInt8, blocklen(SHA2_512_256_CTX)), false)
 
 """
     SHA3_224_CTX()
@@ -229,6 +261,8 @@ show(io::IO, ::SHA2_224_CTX) = print(io, "SHA2 224-bit hash state")
 show(io::IO, ::SHA2_256_CTX) = print(io, "SHA2 256-bit hash state")
 show(io::IO, ::SHA2_384_CTX) = print(io, "SHA2 384-bit hash state")
 show(io::IO, ::SHA2_512_CTX) = print(io, "SHA2 512-bit hash state")
+show(io::IO, ::SHA2_512_224_CTX) = print(io, "SHA2 512/224-bit hash state")
+show(io::IO, ::SHA2_512_256_CTX) = print(io, "SHA2 512/256-bit hash state")
 show(io::IO, ::SHA3_224_CTX) = print(io, "SHA3 224-bit hash state")
 show(io::IO, ::SHA3_256_CTX) = print(io, "SHA3 256-bit hash state")
 show(io::IO, ::SHA3_384_CTX) = print(io, "SHA3 384-bit hash state")
