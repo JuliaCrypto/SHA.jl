@@ -10,15 +10,19 @@ data_desc = ["the empty string", "the string \"test\"", "lorem ipsum",
              "0 file", "one million a's Array", "one million a's Tuple"]
 sha_types = Dict(sha1 => SHA.SHA1_CTX,
             sha2_224 => SHA.SHA2_224_CTX, sha2_256 => SHA.SHA2_256_CTX, sha2_384 => SHA.SHA2_384_CTX, sha2_512 => SHA.SHA2_512_CTX,
+            sha2_512_224 => SHA.SHA2_512_224_CTX, sha2_512_256 => SHA.SHA2_512_256_CTX,
             sha3_224 => SHA.SHA3_224_CTX, sha3_256 => SHA.SHA3_256_CTX, sha3_384 => SHA.SHA3_384_CTX, sha3_512 => SHA.SHA3_512_CTX)
 sha_funcs = [sha1,
              sha2_224, sha2_256, sha2_384, sha2_512,
+             sha2_512_224, sha2_512_256,
              sha3_224, sha3_256, sha3_384, sha3_512]
 ctxs = [SHA1_CTX,
         SHA2_224_CTX, SHA2_256_CTX, SHA2_384_CTX, SHA2_512_CTX,
+        SHA2_512_224_CTX, SHA2_512_256_CTX,
         SHA3_224_CTX, SHA3_256_CTX, SHA3_384_CTX, SHA3_512_CTX]
 shws = ["SHA1 hash state",
         "SHA2 224-bit hash state", "SHA2 256-bit hash state", "SHA2 384-bit hash state", "SHA2 512-bit hash state",
+        "SHA2 512/224-bit hash state", "SHA2 512/256-bit hash state",
         "SHA3 224-bit hash state", "SHA3 256-bit hash state", "SHA3 384-bit hash state", "SHA3 512-bit hash state"]
 
 answers = Dict(
@@ -62,6 +66,23 @@ answers = Dict(
         "e718483d0ce769644e2e42c7bc15b4638e1f98b13b2044285632a803afa973ebde0ff244877ea60a4cb0432ce577c31beb009c5c2c49aa2e4eadb217ad8cc09b",
         "e718483d0ce769644e2e42c7bc15b4638e1f98b13b2044285632a803afa973ebde0ff244877ea60a4cb0432ce577c31beb009c5c2c49aa2e4eadb217ad8cc09b"
     ],
+    sha2_512_224 => [
+        "6ed0dd02806fa89e25de060c19d3ac86cabb87d6a0ddd05c333b84f4",
+        "06001bf08dfb17d2b54925116823be230e98b5c6c278303bc4909a8c",
+        "3a312b004a593b706790a4a5b25309eb7c83efb85a4d1f0a8440e09e",
+        "283bb59af7081ed08197227d8f65b9591ffe1155be43e9550e57f941",
+        "37ab331d76f0d36de422bd0edeb22a28accd487b7a8453ae965dd287",
+        "37ab331d76f0d36de422bd0edeb22a28accd487b7a8453ae965dd287"
+    ],
+    sha2_512_256 => [
+        "c672b8d1ef56ed28ab87c3622c5114069bdd3ad7b8f9737498d0c01ecef0967a",
+        "3d37fe58435e0d87323dee4a2c1b339ef954de63716ee79f5747f94d974f913f",
+        "9423e3863ebb6f22b9464aeb873a39d757ef6b6a87c4bc55642f69052741fc43",
+        "10baad1713566ac2333467bddb0597dec9066120dd72ac2dcb8394221dcbe43d",
+        "9a59a052930187a97038cae692f30708aa6491923ef5194394dc68d56c74fb21",
+        "9a59a052930187a97038cae692f30708aa6491923ef5194394dc68d56c74fb21"
+    ],
+
     sha3_224 => [
         "6b4e03423667dbb73b6e15454f0eb1abd4597f9a1b078e3f5b5a6bc7",
         "3797bf0afbbfca4a7bbba7602a2b552746876517a7f9b7ce2db0ae7b",
