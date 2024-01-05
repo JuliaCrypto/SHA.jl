@@ -8,39 +8,39 @@ import Base: copy
 # We derive SHA1_CTX straight from SHA_CTX since it doesn't have a
 # family of types like SHA2 or SHA3 do
 mutable struct SHA1_CTX <: SHA_CTX
-    state::Array{UInt32,1}
+    state::Vector{UInt32}
     bytecount::UInt64
-    buffer::Array{UInt8,1}
-    W::Array{UInt32,1}
+    buffer::Vector{UInt8}
+    W::Vector{UInt32}
     used::Bool
 end
 
 # SHA2 224/256/384/512-bit Context Structures
 mutable struct SHA2_224_CTX <: SHA2_CTX
-    state::Array{UInt32,1}
+    state::Vector{UInt32}
     bytecount::UInt64
-    buffer::Array{UInt8,1}
+    buffer::Vector{UInt8}
     used::Bool
 end
 
 mutable struct SHA2_256_CTX <: SHA2_CTX
-    state::Array{UInt32,1}
+    state::Vector{UInt32}
     bytecount::UInt64
-    buffer::Array{UInt8,1}
+    buffer::Vector{UInt8}
     used::Bool
 end
 
 mutable struct SHA2_384_CTX <: SHA2_CTX
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
+    buffer::Vector{UInt8}
     used::Bool
 end
 
 mutable struct SHA2_512_CTX <: SHA2_CTX
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
+    buffer::Vector{UInt8}
     used::Bool
 end
 
@@ -68,31 +68,31 @@ const SHA512_CTX = SHA2_512_CTX
 
 # SHA3 224/256/384/512-bit context structures
 mutable struct SHA3_224_CTX <: SHA3_CTX
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
-    bc::Array{UInt64,1}
+    buffer::Vector{UInt8}
+    bc::Vector{UInt64}
     used::Bool
 end
 mutable struct SHA3_256_CTX <: SHA3_CTX
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
-    bc::Array{UInt64,1}
+    buffer::Vector{UInt8}
+    bc::Vector{UInt64}
     used::Bool
 end
 mutable struct SHA3_384_CTX <: SHA3_CTX
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
-    bc::Array{UInt64,1}
+    buffer::Vector{UInt8}
+    bc::Vector{UInt64}
     used::Bool
 end
 mutable struct SHA3_512_CTX <: SHA3_CTX
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
-    bc::Array{UInt64,1}
+    buffer::Vector{UInt8}
+    bc::Vector{UInt64}
     used::Bool
 end
 

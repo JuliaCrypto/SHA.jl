@@ -1,17 +1,17 @@
 abstract type SHAKE <: SHA3_CTX end 
 # note, that field property used has differend uses, depending on T<:SHAKE or T<:SHA3_CTX
 mutable struct SHAKE_128_CTX <: SHAKE
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
-    bc::Array{UInt64,1}
+    buffer::Vector{UInt8}
+    bc::Vector{UInt64}
     used::Bool
 end
 mutable struct SHAKE_256_CTX <: SHAKE
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
-    bc::Array{UInt64,1}
+    buffer::Vector{UInt8}
+    bc::Vector{UInt64}
     used::Bool
 end
 
@@ -111,7 +111,7 @@ Hash data using the `shake128` algorithm and return the first d resulting bytes.
 function shake128(data::AbstractBytes,d::UInt)
     ctx = SHAKE_128_CTX()
     update!(ctx, data)
-    M = Array{UInt8,1}(undef,d)     # prealloc
+    M = Vector{UInt8}(undef,d)     # prealloc
     p = pointer(M)
     digest!(ctx,d,p)
     return M
@@ -124,7 +124,7 @@ Hash data using the `shake258` algorithm and return the first d resulting bytes.
 function shake256(data::AbstractBytes,d::UInt)
     ctx = SHAKE_256_CTX()
     update!(ctx, data)
-    M = Array{UInt8,1}(undef,d)     # prealloc
+    M = Vector{UInt8}(undef,d)     # prealloc
     p = pointer(M)
     digest!(ctx,d,p)
     return M

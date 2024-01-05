@@ -32,7 +32,7 @@ julia> using SHA
 julia> open("/tmp/test.txt") do f
            sha2_256(f)
        end
-32-element Array{UInt8,1}:
+32-element Vector{UInt8}:
  0x9f
  0x86
  0xd0
@@ -55,7 +55,7 @@ julia> open("/tmp/test.txt") do f
 Due to the colloquial usage of `sha256` to refer to `sha2_256`, convenience functions are provided, mapping `shaxxx()` function calls to `sha2_xxx()`.
 For SHA-3, no such colloquialisms exist and the user must use the full `sha3_xxx()` names.
 
-`shaxxx()` takes `AbstractString` and array-like objects (`NTuple` and `Array`) with elements of type `UInt8`.
+`shaxxx()` takes `AbstractString` and array-like objects (`NTuple` and `Vector`) with elements of type `UInt8`.
 
 **SHA-1**
 ```@docs

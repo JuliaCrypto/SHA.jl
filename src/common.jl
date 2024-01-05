@@ -82,7 +82,7 @@ end
 """
     digest!(context)
 
-Finalize the SHA context and return the hash as array of bytes (Array{Uint8, 1}).
+Finalize the SHA context and return the hash as array of bytes (Vector{Uint8}).
 Updating the context after calling `digest!` on it will error.
 
 # Examples
@@ -93,7 +93,7 @@ SHA1 hash state
 julia> update!(ctx, b"data to to be hashed")
 
 julia> digest!(ctx)
-20-element Array{UInt8,1}:
+20-element Vector{UInt8}:
  0x83
  0xe4
  ⋮
