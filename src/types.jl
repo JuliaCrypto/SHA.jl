@@ -198,13 +198,19 @@ SHA2_512_CTX() = SHA2_512_CTX(copy(SHA2_512_initial_hash_value), 0, zeros(UInt8,
 """
     SHA2_512_224_CTX()
 
-Construct an empty SHA2_512/224 context.
+Construct an empty SHA2_512/224 context and set the initial hash value.
+
+For the source of the initial value,
+refer to [FIPS 180-4, 5.3.6.1 SHA-512/224](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf)
 """
 SHA2_512_224_CTX() = SHA2_512_224_CTX(copy(SHA2_512_224_initial_hash_value), 0, zeros(UInt8, blocklen(SHA2_512_224_CTX)), false)
 """
     SHA2_512_256_CTX()
 
-Construct an empty SHA2_512/256 context.
+Construct an empty SHA2_512/256 context and set the initial hash value.
+
+For the source of the initial value,
+refer to [FIPS 180-4, 5.3.6.2 SHA-512/256](https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf)
 """
 SHA2_512_256_CTX() = SHA2_512_256_CTX(copy(SHA2_512_256_initial_hash_value), 0, zeros(UInt8, blocklen(SHA2_512_256_CTX)), false)
 

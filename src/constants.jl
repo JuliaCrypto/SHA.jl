@@ -1,4 +1,8 @@
-# SHA initial hash values and constants
+"""SHA initial hash values and constants
+
+Reference:
+- SHA-1, SHA2: FIPS 180-4: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
+"""
 
 # Hash constant words K for SHA1
 const K1 = UInt32[
