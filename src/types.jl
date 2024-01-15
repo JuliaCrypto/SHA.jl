@@ -45,16 +45,16 @@ mutable struct SHA2_512_CTX <: SHA2_CTX
 end
 
 mutable struct SHA2_512_224_CTX <: SHA2_CTX
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
+    buffer::Vector{UInt8}
     used::Bool
 end
 
 mutable struct SHA2_512_256_CTX <: SHA2_CTX
-    state::Array{UInt64,1}
+    state::Vector{UInt64}
     bytecount::UInt128
-    buffer::Array{UInt8,1}
+    buffer::Vector{UInt8}
     used::Bool
 end
 
