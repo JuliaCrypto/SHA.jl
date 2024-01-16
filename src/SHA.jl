@@ -37,10 +37,12 @@ module SHA
 export sha1, SHA1_CTX, update!, digest!
 export sha224, sha256, sha384, sha512
 export sha2_224, sha2_256, sha2_384, sha2_512
+export sha2_512_224, sha2_512_256
 export sha3_224, sha3_256, sha3_384, sha3_512
 export shake128, shake256
 export SHA224_CTX, SHA256_CTX, SHA384_CTX, SHA512_CTX
 export SHA2_224_CTX, SHA2_256_CTX, SHA2_384_CTX, SHA2_512_CTX
+export SHA2_512_224_CTX, SHA2_512_256_CTX
 export SHA3_224_CTX, SHA3_256_CTX, SHA3_384_CTX, SHA3_512_CTX
 export SHAKE_128_CTX, SHAKE_256_CTX
 export HMAC_CTX, hmac_sha1
@@ -74,6 +76,8 @@ for (f, ctx) in [(:sha1, :SHA1_CTX),
                  (:sha2_256, :SHA2_256_CTX),
                  (:sha2_384, :SHA2_384_CTX),
                  (:sha2_512, :SHA2_512_CTX),
+                 (:sha2_512_224, :SHA2_512_224_CTX),
+                 (:sha2_512_256, :SHA2_512_256_CTX),
                  (:sha3_224, :SHA3_224_CTX),
                  (:sha3_256, :SHA3_256_CTX),
                  (:sha3_384, :SHA3_384_CTX),

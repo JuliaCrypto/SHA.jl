@@ -88,6 +88,19 @@ end
     end
 end
 
+@testset "SHA-512/t" begin
+    # https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA512_224.pdf
+    @test sha2_512_224("abc") |> bytes2hex ==
+        "4634270f707b6a54daae7530460842e20e37ed265ceee9a43e8924aa"
+    @test sha2_512_224("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu") |> bytes2hex ==
+        "23fec5bb94d60b23308192640b0c453335d664734fe40e7268674af9"
+    # https://csrc.nist.gov/CSRC/media/Projects/Cryptographic-Standards-and-Guidelines/documents/examples/SHA512_256.pdf
+    @test sha2_512_256("abc") |> bytes2hex ==
+        "53048e2681941ef99b2e29b76b4c7dabe4c2d0c634fc6d46e0e2f13107e7af23"
+    @test sha2_512_256("abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmnhijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu") |> bytes2hex ==
+        "3928e184fb8690f840da3988121d31be65cb9d3ef83ee6146feac861e19b563a"
+end
+
 @testset "SHA3" begin
     @test sha3_512("0" ^ 70) |> bytes2hex ==
         "1ec3e5ebb442c09e7ab7a1ee18edfa1a9ec771ad243e3e3d65cad1730416109a0890e29f9314babd7ab018a246b2f9639af29ee09aec2352a2f94dc12a2f6109"

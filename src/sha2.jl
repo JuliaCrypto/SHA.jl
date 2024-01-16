@@ -102,10 +102,11 @@ macro R_end(T)
 end
 
 @generated function transform!(context::Union{SHA2_224_CTX, SHA2_256_CTX,
-                                              SHA2_384_CTX, SHA2_512_CTX})
+                                              SHA2_384_CTX, SHA2_512_CTX,
+                                              SHA2_512_224_CTX, SHA512_256_CTX})
     if context <: Union{SHA2_224_CTX,SHA2_256_CTX}
         T = 256
-    elseif context <: Union{SHA2_384_CTX,SHA2_512_CTX}
+    elseif context <: Union{SHA2_384_CTX,SHA2_512_CTX,SHA2_512_224_CTX,SHA512_256_CTX}
         T = 512
     end
 

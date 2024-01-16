@@ -1,4 +1,8 @@
-# SHA initial hash values and constants
+"""SHA initial hash values and constants
+
+Reference:
+- SHA-1, SHA2: FIPS 180-4: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf
+"""
 
 # Hash constant words K for SHA1
 const K1 = UInt32[
@@ -103,6 +107,23 @@ const SHA2_512_initial_hash_value = UInt64[
     0x510e527fade682d1, 0x9b05688c2b3e6c1f,
     0x1f83d9abfb41bd6b, 0x5be0cd19137e2179
 ]
+
+# Initial hash value H for SHA-512/224
+const SHA2_512_224_initial_hash_value = UInt64[
+    0x8C3D37C819544DA2, 0x73E1996689DCD4D6,
+    0x1DFAB7AE32FF9C82, 0x679DD514582F9FCF,
+    0x0F6D2B697BD44DA8, 0x77E36F7304C48942,
+    0x3F9D85A86A1D36C8, 0x1112E6AD91D692A1
+]
+
+# Initial hash value H for SHA-512/256
+const SHA2_512_256_initial_hash_value = UInt64[
+    0x22312194FC2BF72C, 0x9F555FA3C84C64C2,
+    0x2393B86B6F53B151, 0x963877195940EABD,
+    0x96283EE2A88EFFE3, 0xBE5E1E2553863992,
+    0x2B0199FC2C85B8AA, 0x0EB72DDC81C52CA2
+]
+
 
 # Round constants for SHA3 rounds
 const SHA3_ROUND_CONSTS = UInt64[
