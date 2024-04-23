@@ -135,6 +135,11 @@ blocklen(::Type{SHA3_256_CTX}) = UInt64(25*8 - 2*digestlen(SHA3_256_CTX))
 blocklen(::Type{SHA3_384_CTX}) = UInt64(25*8 - 2*digestlen(SHA3_384_CTX))
 blocklen(::Type{SHA3_512_CTX}) = UInt64(25*8 - 2*digestlen(SHA3_512_CTX))
 
+rate_in_bytes(::Type{SHA3_224_CTX}) = 144
+rate_in_bytes(::Type{SHA3_256_CTX}) = 136
+rate_in_bytes(::Type{SHA3_384_CTX}) = 104
+rate_in_bytes(::Type{SHA3_512_CTX}) = 72
+
 
 # short_blocklen is the size of a block minus the width of bytecount
 short_blocklen(::Type{T}) where {T<:SHA_CTX} = blocklen(T) - 2*sizeof(state_type(T))
