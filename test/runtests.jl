@@ -106,7 +106,7 @@ end
         "1ec3e5ebb442c09e7ab7a1ee18edfa1a9ec771ad243e3e3d65cad1730416109a0890e29f9314babd7ab018a246b2f9639af29ee09aec2352a2f94dc12a2f6109"
     # test `digest!` branch: @assert  usedspace == blocklen(T) - 1
     @test sha3_512("0" ^ 71) |> bytes2hex ==
-        "e6bb5d7cdde31df695c20516581127d9dab6e8d6c5196203d96a55251ce886b4824538baeaa519add156fd61633fec1ecffcc3e5d6c5a6d5da0f1c4d4e6f405e"
+        "2bdaca04f78ae216331557358d124c0b79305735e5a65fa91a8d6504c92fe1a780ee992a5f0233dad0b79875333a40d1c26d435684442492ad1e3166ef19809b"
     @test sha3_512("0" ^ 72) |> bytes2hex ==
         "69eb8ccde4eec57d5e78512bf29081dc15d3ca650d5bf15cc9c0dfd7d7c477c067504fb99c7c787df248a9897cbeaeafeae563e855205660363dd700e1d43eee"
 end

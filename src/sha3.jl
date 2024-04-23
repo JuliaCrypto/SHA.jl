@@ -66,12 +66,9 @@ function digest!(context::T) where {T<:SHA3_CTX}
             # Finish it off with a 0x80
             context.buffer[end] = 0x80
         else
-            # Otherwise, we have to add on a whole new buffer just for the zeros and 0x80
-            context.buffer[end] = 0x06
-            transform!(context)
-
-            context.buffer[1:end-1] .= 0x0
-            context.buffer[end] = 0x80
+            # Otherwise, we have just a single byte of padding to add
+            # X-ref: https://crypto.stackexchange.com/a/40515
+            context.buffer[end] = 0x86
         end
 
         # Final transform:
