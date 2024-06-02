@@ -209,12 +209,6 @@ Construct an empty SHA3_512 context.
 """
 SHA3_512_CTX() = SHA3_512_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHA3_512_CTX)), Vector{UInt64}(undef, 5), false)
 
-# Nickname'd outer constructor methods for SHA2
-const SHA224_CTX = SHA2_224_CTX
-const SHA256_CTX = SHA2_256_CTX
-const SHA384_CTX = SHA2_384_CTX
-const SHA512_CTX = SHA2_512_CTX
-
 # SHA1 is special; he needs extra workspace
 """
     SHA1_CTX()
