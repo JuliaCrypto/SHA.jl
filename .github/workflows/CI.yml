@@ -28,7 +28,7 @@ jobs:
           - 'x64'
           - 'x86'
         julia-version:
-          - '1.6'
+          - '1.10'  # LTS
           - 'nightly'
         exclude:
           - os: macOS-latest
