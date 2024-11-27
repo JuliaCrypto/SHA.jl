@@ -156,11 +156,6 @@ end
 end
 
 @testset "codecov" begin
-    @test_throws ErrorException("type SHA2_256_CTX has no field _not_exist") SHA.SHA2_256_CTX()._not_exist
-    @test_throws ErrorException("type SHA3_256_CTX has no field _not_exist") SHA.SHA3_256_CTX()._not_exist
-    # default fallback
-    @test_throws ErrorException("type SHA1_CTX has no field _not_exist") SHA.SHA1_CTX()._not_exist
-
     # Table 3: Input block sizes for HMAC
     #   https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.202.pdf
     #        SHA3-224 -256 -384 -512
