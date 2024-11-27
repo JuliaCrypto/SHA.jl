@@ -32,7 +32,10 @@ jobs:
         include:
           # NOTE: macOS-latest+x64 == rosetta on apple silicon
           - os: macOS-latest
-            julia-version: ['1.10', 'nightly']
+            julia-version: '1.10'
+            julia-arch: aarch64
+          - os: macOS-latest
+            julia-version: '1.10'
             julia-arch: aarch64
     steps:
       - uses: actions/checkout@v4
