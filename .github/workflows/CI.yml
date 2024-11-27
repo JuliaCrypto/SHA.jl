@@ -22,7 +22,6 @@ jobs:
       matrix:
         os:
           - ubuntu-latest
-          - macOS-latest
           - windows-latest
         julia-arch:
           - 'x64'
@@ -30,9 +29,11 @@ jobs:
         julia-version:
           - '1.10'  # LTS
           - 'nightly'
-        exclude:
+        include:
+          # NOTE: macOS-latest+x64 == rosetta on apple silicon
           - os: macOS-latest
-            julia-arch: x86
+            julia-version: ['1.10', 'nightly']
+            julia-arch: aarch64
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
