@@ -28,7 +28,7 @@ jobs:
           - 'x64'
           - 'x86'
         julia-version:
-          - '1.6'
+          - 'lts'
           - 'nightly'
         exclude:
           - os: macos-13 # Intel
