@@ -33,6 +33,13 @@ jobs:
         exclude:
           - os: macos-13 # Intel
             julia-arch: x86
+        include:
+          - os: macos-latest # Apple Silicon
+            julia-arch: 'aarch64'
+            julia-version: 'lts'
+          - os: macos-latest # Apple Silicon
+            julia-arch: 'aarch64'
+            julia-version: 'nightly'
     steps:
       - uses: actions/checkout@v4
       - uses: julia-actions/setup-julia@latest
