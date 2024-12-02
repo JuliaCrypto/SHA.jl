@@ -48,7 +48,7 @@ jobs:
             JULIA_PKG_SERVER: ${{ matrix.pkg-server }}
       - uses: codecov/codecov-action@v5
         with:
-          file: lcov.info
+          files: lcov.info
   doctests:
     runs-on: ubuntu-latest
     timeout-minutes: 60
