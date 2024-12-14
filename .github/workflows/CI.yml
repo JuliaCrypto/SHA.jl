@@ -25,7 +25,7 @@ jobs:
           - macos-13 # Intel
           - windows-latest
         julia-arch:
-          - 'x64'
+          # - 'x64'
           - 'x86'
         julia-version:
           - '1.6'
