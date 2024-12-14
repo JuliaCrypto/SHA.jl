@@ -99,10 +99,12 @@ function digest!(context::T,d::UInt,p::Ptr{UInt8}) where {T<:SHAKE}
         end 
         context.used = true
         p+=blocklen(T)
-        digest!(context,d-blocklen(T),p)
+        next_d_len = UInt(d - blocklen(T))
+        digest!(context, next_d_len, p)
         return 
     end
 end
+
 """
     shake128(data::AbstractBytes,d::UInt)
 
