@@ -38,6 +38,7 @@ jobs:
       - uses: julia-actions/setup-julia@latest
         with:
           version: ${{ matrix.julia-version }}
+          arch: ${{ matrix.julia-arch }}
       # Alter the UUID so that we test this package instead of loading
       # the version that is already built into a Julia's system image.
       - run: julia --color=yes .ci/test_and_change_uuid.jl
