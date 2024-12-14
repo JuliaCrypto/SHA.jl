@@ -63,16 +63,29 @@ jobs:
           files: lcov.info
   doctests:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    permissions:
+      # needed to allow julia-actions/cache to proactively delete old caches that it has created
+      actions: write 
+      contents: write
+      statuses: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/setup-julia@v2
         with:
           version: 'nightly'
+      - uses: julia-actions/cache@v2
       - run: julia --color=yes .ci/test_and_change_uuid.jl
-      - run: julia --project=docs --color=yes -e 'using Pkg; Pkg.instantiate()'
-      - run: julia --project=docs --color=yes -e 'using Pkg; Pkg.develop(PackageSpec(path = pwd()))'
+      - name: Configure doc environment
+        shell: julia --project=docs --color=yes {0}
+        run: |
+          using Pkg
+          Pkg.develop(PackageSpec(path=pwd()))
+          Pkg.instantiate()
+      - uses: julia-actions/julia-buildpkg@v1
       - name: Run doctests
-        run: julia --project=docs --color=yes -e 'import SHA; import Documenter; Documenter.doctest(SHA)'
+        shell: julia --project=docs --color=yes {0}
+        run: |
+          using Documenter: DocMeta, doctest
+          using SHA
+          DocMeta.setdocmeta!(SHA, :DocTestSetup, :(using SHA); recursive=true)
+          doctest(SHA)
