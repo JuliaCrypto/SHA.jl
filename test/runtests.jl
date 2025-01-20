@@ -182,6 +182,4 @@ end
         @test SHA.shake256(b"",UInt(32)) == hex2bytes("46b9dd2b0ba88d13233b3feb743eeb243fcd52ea62b81b82b50c27646ed5762f")
         @test SHA.shake256(codeunits("0"^135),UInt(32)) == hex2bytes("ab11f61b5085a108a58670a66738ea7a8d8ce23b7c57d64de83eaafb10923cf8")
     end
-    @time SHA.shake256(b"abc",UInt(100000))
-    @time SHA.shake128(b"abc",UInt(100000))
 end
