@@ -52,34 +52,47 @@ function transform!(context::T) where {T<:SHAKE}
 end
 function digest!(context::T,d::UInt,p::Ptr{UInt8}) where {T<:SHAKE}
     usedspace = context.bytecount % blocklen(T)
-    # If we have anything in the buffer still, pad and transform that data
-    if usedspace < blocklen(T) - 1
-        # Begin padding with a 0x1f
-        context.buffer[usedspace+1] = 0x1f
-        # Fill with zeros up until the last byte
-        context.buffer[usedspace+2:end-1] .= 0x00
-        # Finish it off with a 0x80
-        context.buffer[end] = 0x80
-    else
-        # Otherwise, we have to add on a whole new buffer
-        context.buffer[end] = 0x9f
+    if !context.used
+        # If we have anything in the buffer still, pad and transform that data
+        if usedspace < blocklen(T) - 1
+            # Begin padding with a 0x1f
+            context.buffer[usedspace+1] = 0x1f
+            # Fill with zeros up until the last byte
+            context.buffer[usedspace+2:end-1] .= 0x00
+            # Finish it off with a 0x80
+            context.buffer[end] = 0x80
+        else
+            # Otherwise, we have to add on a whole new buffer
+            context.buffer[end] = 0x9f
+        end
+        # Final transform:
+        transform!(context)
     end
-    # Final transform:
-    transform!(context)
+    if !context.used
+        context.used = true
+        context.bytecount = 0
+        usedspace = 0
+    end
     # Return the digest:
     # fill the given memory via pointer, if d>blocklen, update pointer and digest again.
-    if d <= blocklen(T)
+    avail = blocklen(T) - usedspace
+    if d <= avail
         for i = 1:d
-            unsafe_store!(p,reinterpret(UInt8, context.state)[i],i)
-        end 
+            unsafe_store!(p,reinterpret(UInt8, context.state)[usedspace+i],i)
+        end
+        context.bytecount += d
+        if avail == d
+            transform!(context)
+        end
         return
     else 
-        for i = 1:blocklen(T)
-            unsafe_store!(p,reinterpret(UInt8, context.state)[i],i)
+        for i = 1:avail
+            unsafe_store!(p,reinterpret(UInt8, context.state)[usedspace+i],i)
         end 
-        context.used = true
-        p+=blocklen(T)
-        next_d_len = UInt(d - blocklen(T))
+        context.bytecount += avail
+        p+=avail
+        next_d_len = UInt(d - avail)
+        transform!(context)
         digest!(context, next_d_len, p)
         return 
     end
