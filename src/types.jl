@@ -72,28 +72,24 @@ mutable struct SHA3_224_CTX <: SHA3_CTX
     state::Vector{UInt64}
     bytecount::UInt128
     buffer::Vector{UInt8}
-    bc::Vector{UInt64}
     used::Bool
 end
 mutable struct SHA3_256_CTX <: SHA3_CTX
     state::Vector{UInt64}
     bytecount::UInt128
     buffer::Vector{UInt8}
-    bc::Vector{UInt64}
     used::Bool
 end
 mutable struct SHA3_384_CTX <: SHA3_CTX
     state::Vector{UInt64}
     bytecount::UInt128
     buffer::Vector{UInt8}
-    bc::Vector{UInt64}
     used::Bool
 end
 mutable struct SHA3_512_CTX <: SHA3_CTX
     state::Vector{UInt64}
     bytecount::UInt128
     buffer::Vector{UInt8}
-    bc::Vector{UInt64}
     used::Bool
 end
 
@@ -189,25 +185,25 @@ SHA2_512_256_CTX() = SHA2_512_256_CTX(copy(SHA2_512_256_initial_hash_value), 0, 
 
 Construct an empty SHA3_224 context.
 """
-SHA3_224_CTX() = SHA3_224_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHA3_224_CTX)), Vector{UInt64}(undef, 5), false)
+SHA3_224_CTX() = SHA3_224_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHA3_224_CTX)), false)
 """
     SHA3_256_CTX()
 
 Construct an empty SHA3_256 context.
 """
-SHA3_256_CTX() = SHA3_256_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHA3_256_CTX)), Vector{UInt64}(undef, 5), false)
+SHA3_256_CTX() = SHA3_256_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHA3_256_CTX)), false)
 """
     SHA3_384_CTX()
 
 Construct an empty SHA3_384 context.
 """
-SHA3_384_CTX() = SHA3_384_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHA3_384_CTX)), Vector{UInt64}(undef, 5), false)
+SHA3_384_CTX() = SHA3_384_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHA3_384_CTX)), false)
 """
     SHA3_512_CTX()
 
 Construct an empty SHA3_512 context.
 """
-SHA3_512_CTX() = SHA3_512_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHA3_512_CTX)), Vector{UInt64}(undef, 5), false)
+SHA3_512_CTX() = SHA3_512_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHA3_512_CTX)), false)
 
 # SHA1 is special; he needs extra workspace
 """
@@ -221,7 +217,7 @@ SHA1_CTX() = SHA1_CTX(copy(SHA1_initial_hash_value), 0, zeros(UInt8, blocklen(SH
 # Copy functions
 copy(ctx::T) where {T<:SHA1_CTX} = T(copy(ctx.state), ctx.bytecount, copy(ctx.buffer), copy(ctx.W), ctx.used)
 copy(ctx::T) where {T<:SHA2_CTX} = T(copy(ctx.state), ctx.bytecount, copy(ctx.buffer), ctx.used)
-copy(ctx::T) where {T<:SHA3_CTX} = T(copy(ctx.state), ctx.bytecount, copy(ctx.buffer), Vector{UInt64}(undef, 5), ctx.used)
+copy(ctx::T) where {T<:SHA3_CTX} = T(copy(ctx.state), ctx.bytecount, copy(ctx.buffer), ctx.used)
 
 
 # Make printing these types a little friendlier
