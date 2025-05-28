@@ -1,51 +1,47 @@
+@inline function keccak_theta(state::NTuple{25,UInt64})
+    C = ntuple(i -> state[i] ⊻ state[i + 5] ⊻ state[i + 10] ⊻ state[i + 15] ⊻ state[i + 20], Val(5))
+    D = ntuple(i -> C[rem(i + 3, 5) + 1] ⊻ L64(1, C[rem(i, 5) + 1]), Val(5))
+    return ntuple(k -> state[k] ⊻ D[rem(k - 1, 5) + 1], Val(25))
+end
+
+@inline keccak_rho(state::NTuple{25,UInt64}) =
+    ntuple(k -> bitrotate(state[k], SHA3_ROTC[k]), Val(25))
+
+@inline keccak_pi(state::NTuple{25,UInt64}) =
+    ntuple(k -> state[SHA3_PILN[k]], Val(25))
+
+@inline function keccak_chi(state::NTuple{25,UInt64})
+    return ntuple(
+        k -> let j = k - rem(k - 1, 5)
+            state[k] ⊻ (~state[rem(k, 5) + j] & state[rem(k + 1, 5) + j])
+        end,
+        Val(25)
+    )
+end
+
+@inline keccak_iota(round, state::NTuple{25,UInt64}) =
+    (state[1] ⊻ SHA3_ROUND_CONSTS[round+1], state[2:end]...)
+
 function transform!(context::T) where {T<:SHA3_CTX}
     # First, update state with buffer
     pbuf = Ptr{eltype(context.state)}(pointer(context.buffer))
     for idx in 1:div(blocklen(T),8)
         context.state[idx] = context.state[idx] ⊻ unsafe_load(pbuf, idx)
     end
-    bc = context.bc
-    state = context.state
+
+    state = let s = context.state; ntuple(i -> s[i], Val(25)); end
 
     # We always assume 24 rounds
-    @inbounds for round in 0:23
-        # Theta function
-        for i in 1:5
-            bc[i] = state[i] ⊻ state[i + 5] ⊻ state[i + 10] ⊻ state[i + 15] ⊻ state[i + 20]
-        end
+    for round in 0:23
+        state = keccak_theta(state)
+        state = keccak_rho(state)
+        state = keccak_pi(state)
+        state = keccak_chi(state)
+        state = keccak_iota(round, state)
+    end
 
-        for i in 0:4
-            temp = bc[rem(i + 4, 5) + 1] ⊻ L64(1, bc[rem(i + 1, 5) + 1])
-            j = 0
-            while j <= 20
-                state[Int(i + j + 1)] = state[i + j + 1] ⊻ temp
-                j += 5
-            end
-        end
-
-        # Rho Pi
-        temp = state[2]
-        for i in 1:24
-            j = SHA3_PILN[i]
-            bc[1] = state[j]
-            state[j] = L64(SHA3_ROTC[i], temp)
-            temp = bc[1]
-        end
-
-        # Chi
-        j = 0
-        while j <= 20
-            for i in 1:5
-                bc[i] = state[i + j]
-            end
-            for i in 0:4
-                state[j + i + 1] = state[j + i + 1] ⊻ (~bc[rem(i + 1, 5) + 1] & bc[rem(i + 2, 5) + 1])
-            end
-            j += 5
-        end
-
-        # Iota
-        state[1] = state[1] ⊻ SHA3_ROUND_CONSTS[round+1]
+    for k in 1:25
+        context.state[k] = state[k]
     end
 
     return context.state

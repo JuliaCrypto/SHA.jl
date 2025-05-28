@@ -138,13 +138,13 @@ const SHA3_ROUND_CONSTS = UInt64[
 ]
 
 # Rotation constants for SHA3 rounds
-const SHA3_ROTC = UInt64[
-    1,  3,  6,  10, 15, 21, 28, 36, 45, 55, 2,  14,
-    27, 41, 56, 8,  25, 43, 62, 18, 39, 61, 20, 44
-]
+const SHA3_ROTC = (
+     0,  1, 62, 28, 27, 36, 44,  6, 55, 20,  3, 10, 43,
+    25, 39, 41, 45, 15, 21,  8, 18,  2, 61, 56, 14,
+)
 
 # Permutation indices for SHA3 rounds (+1'ed so as to work with julia's 1-based indexing)
-const SHA3_PILN = Int[
-    11, 8,  12, 18, 19, 4, 6,  17, 9,  22, 25, 5,
-    16, 24, 20, 14, 13, 3, 21, 15, 23, 10,  7,  2
-]
+const SHA3_PILN = (
+     1,  7, 13, 19, 25,  4, 10, 11, 17, 23,  2,  8, 14,
+    20, 21,  5,  6, 12, 18, 24,  3,  9, 15, 16, 22,
+)

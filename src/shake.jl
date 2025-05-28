@@ -4,14 +4,12 @@ mutable struct SHAKE_128_CTX <: SHAKE
     state::Vector{UInt64}
     bytecount::UInt128
     buffer::Vector{UInt8}
-    bc::Vector{UInt64}
     used::Bool
 end
 mutable struct SHAKE_256_CTX <: SHAKE
     state::Vector{UInt64}
     bytecount::UInt128
     buffer::Vector{UInt8}
-    bc::Vector{UInt64}
     used::Bool
 end
 
@@ -22,8 +20,8 @@ blocklen(::Type{SHAKE_256_CTX}) = UInt64(25*8 - 2*digestlen(SHAKE_256_CTX))
 buffer_pointer(ctx::T) where {T<:SHAKE} = Ptr{state_type(T)}(pointer(ctx.buffer))
 
 # construct an empty SHA context
-SHAKE_128_CTX() = SHAKE_128_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHAKE_128_CTX)), Vector{UInt64}(undef, 5), false)
-SHAKE_256_CTX() = SHAKE_256_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHAKE_256_CTX)), Vector{UInt64}(undef, 5), false)
+SHAKE_128_CTX() = SHAKE_128_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHAKE_128_CTX)), false)
+SHAKE_256_CTX() = SHAKE_256_CTX(zeros(UInt64, 25), 0, zeros(UInt8, blocklen(SHAKE_256_CTX)), false)
 
 function transform!(context::T) where {T<:SHAKE}
     # First, update state with buffer
@@ -34,40 +32,22 @@ function transform!(context::T) where {T<:SHAKE}
             context.state[idx] = context.state[idx] ⊻ unsafe_load(pbuf, idx)
         end
     end 
-    bc = context.bc
-    state = context.state
+
+    state = let s = context.state; ntuple(i -> s[i], Val(25)); end
+
     # We always assume 24 rounds
-    @inbounds for round in 0:23
-        # Theta function
-        for i in 1:5
-            bc[i] = state[i] ⊻ state[i + 5] ⊻ state[i + 10] ⊻ state[i + 15] ⊻ state[i + 20]
-        end
-        for i in 0:4
-            temp = bc[rem(i + 4, 5) + 1] ⊻ L64(1, bc[rem(i + 1, 5) + 1])
-            for j in 0:5:20
-                state[Int(i + j + 1)] = state[i + j + 1] ⊻ temp
-            end
-        end
-        # Rho Pi
-        temp = state[2]
-        for i in 1:24
-            j = SHA3_PILN[i]
-            bc[1] = state[j]
-            state[j] = L64(SHA3_ROTC[i], temp)
-            temp = bc[1]
-        end
-        # Chi
-        for j in 0:5:20
-            for i in 1:5
-                bc[i] = state[i + j]
-            end
-            for i in 0:4
-                state[j + i + 1] = state[j + i + 1] ⊻ (~bc[rem(i + 1, 5) + 1] & bc[rem(i + 2, 5) + 1])
-            end
-        end
-        # Iota
-        state[1] = state[1] ⊻ SHA3_ROUND_CONSTS[round+1]
+    for round in 0:23
+        state = keccak_theta(state)
+        state = keccak_rho(state)
+        state = keccak_pi(state)
+        state = keccak_chi(state)
+        state = keccak_iota(round, state)
     end
+
+    for k in 1:25
+        context.state[k] = state[k]
+    end
+
     return context.state
 end
 function digest!(context::T,d::UInt,p::Ptr{UInt8}) where {T<:SHAKE}
