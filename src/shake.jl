@@ -67,34 +67,26 @@ function digest!(context::T,d::UInt,p::Ptr{UInt8}) where {T<:SHAKE}
         end
         # Final transform:
         transform!(context)
-    end
-    if !context.used
+
         context.used = true
         context.bytecount = 0
         usedspace = 0
     end
     # Return the digest:
     # fill the given memory via pointer, if d>blocklen, update pointer and digest again.
-    avail = blocklen(T) - usedspace
-    if d <= avail
-        for i = 1:d
+    while d > 0
+        avail = blocklen(T) - usedspace
+        len = min(d, avail)
+        for i = 1:len
             unsafe_store!(p,reinterpret(UInt8, context.state)[usedspace+i],i)
         end
-        context.bytecount += d
-        if avail == d
+        context.bytecount += len
+        p += len
+        d = UInt(d - len)
+        if len == avail
             transform!(context)
+            usedspace = context.bytecount % blocklen(T)
         end
-        return
-    else 
-        for i = 1:avail
-            unsafe_store!(p,reinterpret(UInt8, context.state)[usedspace+i],i)
-        end 
-        context.bytecount += avail
-        p+=avail
-        next_d_len = UInt(d - avail)
-        transform!(context)
-        digest!(context, next_d_len, p)
-        return 
     end
 end
 
