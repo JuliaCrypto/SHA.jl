@@ -52,36 +52,41 @@ function transform!(context::T) where {T<:SHAKE}
 end
 function digest!(context::T,d::UInt,p::Ptr{UInt8}) where {T<:SHAKE}
     usedspace = context.bytecount % blocklen(T)
-    # If we have anything in the buffer still, pad and transform that data
-    if usedspace < blocklen(T) - 1
-        # Begin padding with a 0x1f
-        context.buffer[usedspace+1] = 0x1f
-        # Fill with zeros up until the last byte
-        context.buffer[usedspace+2:end-1] .= 0x00
-        # Finish it off with a 0x80
-        context.buffer[end] = 0x80
-    else
-        # Otherwise, we have to add on a whole new buffer
-        context.buffer[end] = 0x9f
+    if !context.used
+        # If we have anything in the buffer still, pad and transform that data
+        if usedspace < blocklen(T) - 1
+            # Begin padding with a 0x1f
+            context.buffer[usedspace+1] = 0x1f
+            # Fill with zeros up until the last byte
+            context.buffer[usedspace+2:end-1] .= 0x00
+            # Finish it off with a 0x80
+            context.buffer[end] = 0x80
+        else
+            # Otherwise, we have to add on a whole new buffer
+            context.buffer[end] = 0x9f
+        end
+        # Final transform:
+        transform!(context)
+
+        context.used = true
+        context.bytecount = 0
+        usedspace = 0
     end
-    # Final transform:
-    transform!(context)
     # Return the digest:
     # fill the given memory via pointer, if d>blocklen, update pointer and digest again.
-    if d <= blocklen(T)
-        for i = 1:d
-            unsafe_store!(p,reinterpret(UInt8, context.state)[i],i)
-        end 
-        return
-    else 
-        for i = 1:blocklen(T)
-            unsafe_store!(p,reinterpret(UInt8, context.state)[i],i)
-        end 
-        context.used = true
-        p+=blocklen(T)
-        next_d_len = UInt(d - blocklen(T))
-        digest!(context, next_d_len, p)
-        return 
+    while d > 0
+        avail = blocklen(T) - usedspace
+        len = min(d, avail)
+        for i = 1:len
+            unsafe_store!(p,reinterpret(UInt8, context.state)[usedspace+i],i)
+        end
+        context.bytecount += len
+        p += len
+        d = UInt(d - len)
+        if len == avail
+            transform!(context)
+            usedspace = context.bytecount % blocklen(T)
+        end
     end
 end
 
