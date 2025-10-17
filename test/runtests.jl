@@ -170,16 +170,70 @@ end
     @testset "shake128" begin
         for (k,v) in SHA128test
             @test SHA.shake128(hex2bytes(k[1]),k[2]) == hex2bytes(v)
+            ctx = SHAKE_128_CTX()
+            in = hex2bytes(k[1])
+            idx = 1
+            while idx <= length(in)
+                l = min(rand(1:length(in)), length(in) - idx + 1)
+                update!(ctx, in[idx:idx+l-1])
+                idx += l
+            end
+            out = Vector{UInt8}(undef, k[2])
+            idx = 0
+            while idx < k[2]
+                l = min(rand(1:k[2]), k[2] - idx)
+                digest!(ctx, l, pointer(out) + idx)
+                idx += l
+            end
+            @test out == hex2bytes(v)
         end
         @test SHA.shake128(b"",UInt(16)) == hex2bytes("7f9c2ba4e88f827d616045507605853e")
         @test SHA.shake128(codeunits("0" ^ 167), UInt(32)) == hex2bytes("ff60b0516fb8a3d4032900976e98b5595f57e9d4a88a0e37f7cc5adfa3c47da2")
+
+        for chunksize in UInt[1, 2, 3, 200]
+            ctx = SHAKE_128_CTX()
+            out = Vector{UInt8}(undef, 10000)
+            idx = 0
+            while idx < length(out)
+                digest!(ctx, chunksize, pointer(out) + idx)
+                idx += chunksize
+            end
+            @test out == SHA.shake128(UInt8[], UInt(length(out)))
+        end
     end
 
     @testset "shake256" begin
         for (k,v) in SHA256test
             @test SHA.shake256(hex2bytes(k[1]),k[2]) == hex2bytes(v)
+            ctx = SHAKE_256_CTX()
+            in = hex2bytes(k[1])
+            idx = 1
+            while idx <= length(in)
+                l = min(rand(1:length(in)), length(in) - idx + 1)
+                update!(ctx, in[idx:idx+l-1])
+                idx += l
+            end
+            out = Vector{UInt8}(undef, k[2])
+            idx = 0
+            while idx < k[2]
+                l = min(rand(1:k[2]), k[2] - idx)
+                digest!(ctx, l, pointer(out) + idx)
+                idx += l
+            end
+            @test out == hex2bytes(v)
         end
         @test SHA.shake256(b"",UInt(32)) == hex2bytes("46b9dd2b0ba88d13233b3feb743eeb243fcd52ea62b81b82b50c27646ed5762f")
         @test SHA.shake256(codeunits("0"^135),UInt(32)) == hex2bytes("ab11f61b5085a108a58670a66738ea7a8d8ce23b7c57d64de83eaafb10923cf8")
+
+        for chunksize in UInt[1, 2, 3, 200]
+            ctx = SHAKE_256_CTX()
+            out = Vector{UInt8}(undef, 10000)
+            idx = 0
+            while idx < length(out)
+                digest!(ctx, chunksize, pointer(out) + idx)
+                idx += chunksize
+            end
+            @test out == SHA.shake256(UInt8[], UInt(length(out)))
+        end
     end
 end
