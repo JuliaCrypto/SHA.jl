@@ -33,6 +33,8 @@ julia> digest!(ctx)
 """
 module SHA
 
+# Hello world (comment to trigger CI)
+
 # Export convenience functions, context types, update!() and digest!() functions
 export sha1, SHA1_CTX, update!, digest!
 export sha224, sha256, sha384, sha512
