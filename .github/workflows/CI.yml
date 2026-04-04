@@ -50,7 +50,7 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.julia-arch }}
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       # Alter the UUID so that we test this package instead of loading
       # the version that is already built into a Julia's system image.
       - run: julia --color=yes .ci/test_and_change_uuid.jl
@@ -73,7 +73,7 @@ jobs:
       - uses: julia-actions/setup-julia@v2
         with:
           version: 'nightly'
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - run: julia --color=yes .ci/test_and_change_uuid.jl
       - name: Configure doc environment
         shell: julia --project=docs --color=yes {0}
