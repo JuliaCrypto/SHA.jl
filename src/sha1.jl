@@ -43,7 +43,7 @@ function transform!(context::SHA1_CTX)
     # really kills performance and causes a huge number of allocations, so we make it easy on the compiler
     for i = 1:20
         @inbounds begin
-            temp = UInt32(lrot(5, a, 32) + Round0(b,c,d) + e + context.W[i] + K1[1])
+            temp = UInt32(lrot(5, a, 32) +% Round0(b,c,d) +% e +% context.W[i] +% K1[1])
             e = d
             d = c
             c = lrot(30, b, 32)
@@ -54,7 +54,7 @@ function transform!(context::SHA1_CTX)
 
     for i = 21:40
         @inbounds begin
-            temp = UInt32(lrot(5, a, 32) + Round1And3(b,c,d) + e + context.W[i] + K1[2])
+            temp = UInt32(lrot(5, a, 32) +% Round1And3(b,c,d) +% e +% context.W[i] +% K1[2])
             e = d
             d = c
             c = lrot(30, b, 32)
@@ -65,7 +65,7 @@ function transform!(context::SHA1_CTX)
 
     for i = 41:60
         @inbounds begin
-            temp = UInt32(lrot(5, a, 32) + Round2(b,c,d) + e + context.W[i] + K1[3])
+            temp = UInt32(lrot(5, a, 32) +% Round2(b,c,d) +% e +% context.W[i] +% K1[3])
             e = d
             d = c
             c = lrot(30, b, 32)
@@ -76,7 +76,7 @@ function transform!(context::SHA1_CTX)
 
     for i = 61:80
         @inbounds begin
-            temp = UInt32(lrot(5, a, 32) + Round1And3(b,c,d) + e + context.W[i] + K1[4])
+            temp = UInt32(lrot(5, a, 32) +% Round1And3(b,c,d) +% e +% context.W[i] +% K1[4])
             e = d
             d = c
             c = lrot(30, b, 32)
@@ -85,9 +85,9 @@ function transform!(context::SHA1_CTX)
         end
     end
 
-    context.state[1] += a
-    context.state[2] += b
-    context.state[3] += c
-    context.state[4] += d
-    context.state[5] += e
+    context.state[1] +%= a
+    context.state[2] +%= b
+    context.state[3] +%= c
+    context.state[4] +%= d
+    context.state[5] +%= e
 end
