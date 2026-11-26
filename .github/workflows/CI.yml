@@ -37,6 +37,9 @@ jobs:
         exclude:
           - os: macos-15-intel # Intel
             julia-arch: x86
+          - os: windows-latest # no 32-bit Windows binary for Julia 1.10.14 (lts)
+            julia-arch: x86
+            julia-version: lts
         include:
           - os: macos-latest # Apple Silicon
             julia-arch: 'aarch64'
