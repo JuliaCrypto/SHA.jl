@@ -101,9 +101,9 @@ macro R_end(T)
     return esc(expr)
 end
 
-@generated function transform!(context::Union{SHA2_224_CTX, SHA2_256_CTX,
-                                              SHA2_384_CTX, SHA2_512_CTX,
-                                              SHA2_512_224_CTX, SHA512_256_CTX})
+@generated function transform_sw!(context::Union{SHA2_224_CTX, SHA2_256_CTX,
+                                                 SHA2_384_CTX, SHA2_512_CTX,
+                                                 SHA2_512_224_CTX, SHA512_256_CTX})
     if context <: Union{SHA2_224_CTX,SHA2_256_CTX}
         T = 256
     elseif context <: Union{SHA2_384_CTX,SHA2_512_CTX,SHA2_512_224_CTX,SHA512_256_CTX}
@@ -133,4 +133,25 @@ end
             context.state[8] += h
         end
     end
+end
+
+transform!(context::Union{SHA2_384_CTX, SHA2_512_CTX, SHA2_512_224_CTX, SHA512_256_CTX}) =
+    transform_sw!(context)
+
+function transform!(context::Union{SHA2_224_CTX, SHA2_256_CTX})
+    if sha_hw_available()
+        GC.@preserve context sha256_blocks_hw!(context.state, pointer(context.buffer), 1)
+    else
+        transform_sw!(context)
+    end
+    return
+end
+
+# Hash whole blocks directly from contiguous input, skipping the copy into
+# context.buffer (see `transform_blocks!` in common.jl).
+function transform_blocks!(context::Union{SHA2_224_CTX, SHA2_256_CTX}, data::ContiguousBytes,
+                           idx, nblocks)
+    sha_hw_available() || return 0
+    GC.@preserve data sha256_blocks_hw!(context.state, pointer(data, idx), nblocks)
+    return nblocks * 64
 end
