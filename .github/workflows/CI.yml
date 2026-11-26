@@ -37,11 +37,20 @@ jobs:
         exclude:
           - os: macos-15-intel # Intel
             julia-arch: x86
+          - os: windows-latest # no 32-bit Windows binary for Julia 1.10.14 (lts)
+            julia-arch: x86
+            julia-version: lts
         include:
           - os: macos-latest # Apple Silicon
             julia-arch: 'aarch64'
             julia-version: 'lts'
           - os: macos-latest # Apple Silicon
+            julia-arch: 'aarch64'
+            julia-version: 'nightly'
+          - os: ubuntu-24.04-arm # Linux aarch64
+            julia-arch: 'aarch64'
+            julia-version: 'lts'
+          - os: ubuntu-24.04-arm # Linux aarch64
             julia-arch: 'aarch64'
             julia-version: 'nightly'
     steps:
@@ -55,6 +64,36 @@ jobs:
       # the version that is already built into a Julia's system image.
       - run: julia --color=yes .ci/test_and_change_uuid.jl
       - uses: julia-actions/julia-buildpkg@v1
+      # Check that the SHA-1/SHA-256 hardware path is used where the CPU supports it, by
+      # comparing SHA.jl's runtime detection with what the OS reports. The result is
+      # also written to the job summary.
+      - name: Check SHA hardware acceleration
+        env:
+          JULIA_ARCH: ${{ matrix.julia-arch }}
+        run: |
+          expected=unknown
+          if [[ "$JULIA_ARCH" == x86 ]]; then
+            expected=false # not implemented for 32-bit x86
+          elif [[ "$RUNNER_OS" == Linux && "$JULIA_ARCH" == x64 ]]; then
+            grep -qw sha_ni /proc/cpuinfo && expected=true || expected=false
+          elif [[ "$RUNNER_OS" == Linux && "$JULIA_ARCH" == aarch64 ]]; then
+            grep -qw sha2 /proc/cpuinfo && expected=true || expected=false
+          elif [[ "$RUNNER_OS" == macOS && "$JULIA_ARCH" == aarch64 ]]; then
+            [[ "$(sysctl -n hw.optional.arm.FEAT_SHA256 2>/dev/null)" == 1 ]] && expected=true || expected=false
+          elif [[ "$RUNNER_OS" == macOS && "$JULIA_ARCH" == x64 ]]; then
+            sysctl -n machdep.cpu.leaf7_features 2>/dev/null | grep -qw SHA && expected=true || expected=false
+          fi
+          EXPECTED="$expected" julia --project --color=yes -e '
+            using SHA
+            hw = SHA.sha_hw_available()
+            expected = ENV["EXPECTED"]
+            msg = "SHA-1/SHA-256 hardware acceleration: $hw (expected: $expected) on $(Sys.ARCH), $(Sys.cpu_info()[1].model)"
+            println(msg)
+            haskey(ENV, "GITHUB_STEP_SUMMARY") && open(io -> println(io, msg), ENV["GITHUB_STEP_SUMMARY"], "a")
+            expected == "unknown" || expected == string(hw) || error("SHA hardware detection mismatch")
+            @assert bytes2hex(sha256("abc")) == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+            @assert bytes2hex(sha1("abc")) == "a9993e364706816aba3e25717850c26c9cd0d89d"
+          '
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1
       - uses: codecov/codecov-action@v7

@@ -27,6 +27,15 @@ function update!(context::T, data::U, datalen=length(data)) where {T<:SHA_CTX, U
     data_idx = convert(UIntXXX, firstindex(data)-1)
     usedspace = context.bytecount % blocklen(T)
     while len - data_idx + usedspace >= blocklen(T)
+        # Fast path: hash whole blocks straight from `data` when the buffer is empty
+        if usedspace == 0
+            n = transform_blocks!(context, data, data_idx + 1, (len - data_idx) ÷ blocklen(T))
+            if n > 0
+                context.bytecount += n
+                data_idx += n
+                continue
+            end
+        end
         # Fill up as much of the buffer as we can with the data given us
         copyto!(context.buffer, usedspace + 1, data, data_idx + 1, blocklen(T) - usedspace)
 
@@ -42,6 +51,11 @@ function update!(context::T, data::U, datalen=length(data)) where {T<:SHA_CTX, U
         context.bytecount += len - data_idx
     end
 end
+
+# Hash `nblocks` whole blocks directly from `data`, starting at index `idx`, and
+# return the number of bytes consumed. Implementations may return 0 to signal that
+# the fast path is not available, in which case data goes through `context.buffer`.
+transform_blocks!(context::SHA_CTX, data, idx, nblocks) = 0
 
 # Pad the remainder leaving space for the bitcount
 function pad_remainder!(context::T) where T<:SHA_CTX

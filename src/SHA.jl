@@ -56,10 +56,60 @@ Union{AbstractVector{UInt8}, NTuple{N, UInt8} where N}
 """
 const AbstractBytes = Union{AbstractVector{UInt8},NTuple{N,UInt8} where N}
 
+# byte containers that support `pointer(data, i)` to contiguous memory
+const ContiguousBytes = Union{DenseVector{UInt8},
+                              Base.FastContiguousSubArray{UInt8,1,<:DenseVector{UInt8}},
+                              Base.CodeUnits{UInt8,String}}
+
 include("constants.jl")
 include("types.jl")
 include("base_functions.jl")
 include("sha1.jl")
+
+# Hardware acceleration of SHA-1 and SHA-256 (ARMv8 SHA1/SHA2, x86 SHA-NI), used if
+# the CPU supports it. Requires Julia 1.10+; older versions use the software path.
+@static if Sys.ARCH === :aarch64 && VERSION >= v"1.10"
+    include("hw_aarch64.jl")
+    const HAS_HW_IMPL = true
+elseif Sys.ARCH === :x86_64 && VERSION >= v"1.10"
+    include("hw_x86_64.jl")
+    const HAS_HW_IMPL = true
+else
+    const HAS_HW_IMPL = false
+    sha256_blocks_hw!(_, _, _) = error("unreachable")
+    sha1_blocks_hw!(_, _, _) = error("unreachable")
+end
+
+# Availability must be determined in the running process (not when precompiling),
+# since a package image may be loaded on a different CPU than it was built on.
+# JULIA_SHA_DISABLE_HW=1 (or true/yes) forces the software implementation.
+sha_hw_disabled() = Base.get_bool_env("JULIA_SHA_DISABLE_HW", false) === true
+@static if !HAS_HW_IMPL
+    sha_hw_available() = false
+elseif isdefined(Base, :OncePerProcess)
+    const SHA_HW = Base.OncePerProcess{Bool}() do
+        !sha_hw_disabled() && detect_sha_hw()
+    end
+    sha_hw_available() = SHA_HW()
+else # Julia 1.10 and 1.11
+    # Lazily cached per process. A Ptr is used since Ptr values are saved as C_NULL in
+    # package and system images, so a value cached while generating an image resets to
+    # "not determined yet" when the image is loaded.
+    # C_NULL = not determined yet, Ptr(1) = unavailable, Ptr(2) = available.
+    # No lock is needed: threads racing on first use may each run the detection, but
+    # they compute the same value, and a pointer-sized load or store cannot tear.
+    const SHA_HW = Ref{Ptr{Cvoid}}(C_NULL)
+    @inline function sha_hw_available()
+        s = SHA_HW[]
+        return s == C_NULL ? init_sha_hw() : s == Ptr{Cvoid}(2)
+    end
+    @noinline function init_sha_hw()
+        hw = !sha_hw_disabled() && detect_sha_hw()
+        SHA_HW[] = Ptr{Cvoid}(hw ? 2 : 1)
+        return hw
+    end
+end
+
 include("sha2.jl")
 include("sha3.jl")
 include("shake.jl")

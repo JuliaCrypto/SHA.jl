@@ -183,3 +183,30 @@ end
         @test SHA.shake256(codeunits("0"^135),UInt(32)) == hex2bytes("ab11f61b5085a108a58670a66738ea7a8d8ce23b7c57d64de83eaafb10923cf8")
     end
 end
+
+@testset "Hardware acceleration" begin
+    @info "SHA-1/SHA-256 hardware acceleration: $(SHA.sha_hw_available())"
+    if SHA.sha_hw_available()
+        # Compare the hardware path against the software implementation block by block
+        for ctxT in (SHA1_CTX, SHA2_224_CTX, SHA2_256_CTX), _ in 1:100
+            hw, sw = ctxT(), ctxT()
+            hw.buffer .= rand(UInt8, length(hw.buffer)); sw.buffer .= hw.buffer
+            hw.state .= rand(UInt32, length(hw.state)); sw.state .= hw.state
+            SHA.transform!(hw)
+            SHA.transform_sw!(sw)
+            @test hw.state == sw.state
+        end
+        # Multi-block fast path in update! vs single-byte updates (always via the buffer)
+        for (ctxT, f) in ((SHA1_CTX, sha1), (SHA2_256_CTX, sha256)), n in (0, 63, 64, 65, 128, 1000, 4097)
+            data = rand(UInt8, n + 3)
+            ctx = ctxT()
+            for b in data[2:n+1]
+                update!(ctx, [b])
+            end
+            r = digest!(ctx)
+            @test f(data[2:n+1]) == r
+            @test f(view(data, 2:n+1)) == r
+            @test f(String(data[2:n+1])) == r
+        end
+    end
+end

@@ -11,7 +11,7 @@ function Round2(b,c,d)
     return UInt32((b & c) | (b & d) | (c & d))
 end
 
-function transform!(context::SHA1_CTX)
+function transform_sw!(context::SHA1_CTX)
     # Buffer is 16 elements long, we expand to 80
     pbuf = buffer_pointer(context)
     for i in 1:16
@@ -90,4 +90,21 @@ function transform!(context::SHA1_CTX)
     context.state[3] += c
     context.state[4] += d
     context.state[5] += e
+end
+
+function transform!(context::SHA1_CTX)
+    if sha_hw_available()
+        GC.@preserve context sha1_blocks_hw!(context.state, pointer(context.buffer), 1)
+    else
+        transform_sw!(context)
+    end
+    return
+end
+
+# Hash whole blocks directly from contiguous input, skipping the copy into
+# context.buffer (see `transform_blocks!` in common.jl).
+function transform_blocks!(context::SHA1_CTX, data::ContiguousBytes, idx, nblocks)
+    sha_hw_available() || return 0
+    GC.@preserve data sha1_blocks_hw!(context.state, pointer(data, idx), nblocks)
+    return nblocks * 64
 end
